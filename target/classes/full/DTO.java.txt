@@ -1,0 +1,31 @@
+package ${javaPackage}.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
+import ${javaPackage}.model.enums.*;
+import javax.validation.constraints.*;
+import java.util.*;
+
+/**
+ * <p>Title         : ${className}DTO
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : DTO for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${className}DTO {
+    @NotNull
+    private Long ${idAttributeName};
+
+    ${classAttributes}
+
+
+}

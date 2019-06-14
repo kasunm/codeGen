@@ -1,0 +1,57 @@
+import { Injectable } from '@angular/core';
+import {${className}} from './${classFileAngular}';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+/**
+ * <p>Title         : ${className} Service
+ * <p>Project       : ${angularProjectName} : ${projectDescription}
+ * <p>Description   : Handle all the communication and data loading. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+
+export class ${className}Service {
+  private _${classVariableName}s = new Array <${className}>();
+  private url = 'http://localhost:8080/${classURL}';
+
+  constructor(private http: HttpClient) {
+  }
+
+  get ${classVariableName}s(): ${className}[] {
+    return this._${classVariableName}s;
+  }
+  set ${classVariableName}s(value: ${className}[]) {
+    this._${classVariableName}s = value;
+  }
+
+  /* ----------- Service HTTP methods -----------  */
+
+  public save${className}(${classVariableName}:${className}){
+   return this.http.post<number>(this.url , ${classVariableName}).pipe(catchError(error => {
+     return throwError('Error occurred: ' + error.message);
+   } ));
+  }
+
+  public fetchAll${className}s(): Observable<${className}[]> {
+    return this.http.get<${className}[]>(this.url );
+  }
+
+  public fetch${className}ById(id: number): Observable<${className}> {
+    return this.http.get<${className}>(this.url + '/' + id);
+  }
+
+  public delete${className}ById(id: number): Observable<number> {
+    return this.http.delete<number>(this.url + '/' + id);
+  }
+
+
+
+
+}

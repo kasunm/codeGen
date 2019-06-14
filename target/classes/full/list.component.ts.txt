@@ -1,0 +1,55 @@
+import { Component, OnInit } from '@angular/core';
+import {${className}} from './${classFileAngular}';
+import {${className}Service} from './${classFileAngular}.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Router} from '@angular/router';
+
+@Component({
+  selector: 'app-${classFileAngular}-list',
+  templateUrl: './${classFileAngular}-list.component.html',
+  styleUrls: ['./${classFileAngular}-list.component.scss']
+})
+export class ${className}ListComponent implements OnInit {
+  private  _${classVariableName}s: Array<${className}>;
+  private errorMessage: HttpErrorResponse;
+
+  constructor(private _${classVariableName}Service: ${className}Service, private router: Router) { }
+
+
+  get ${classVariableName}Service(): ${className}Service {
+    return this._${classVariableName}Service;
+  }
+
+  set ${classVariableName}Service(value: ${className}Service) {
+    this._${classVariableName}Service = value;
+  }
+
+  get ${classVariableName}s(): ${className}[] {
+    return this._${classVariableName}s;
+  }
+
+  ngOnInit() {
+    this._${classVariableName}Service.fetchAll${className}s().subscribe( data => this._${classVariableName}s = data, error1 => this.errorMessage = error1);
+  }
+
+  addNew${className}(){
+    this.router.navigate(['/${classURL}', 0]);
+  }
+
+  edit${className}(${classVariableName}ID: number) {
+    this.router.navigate(['/${classURL}', ${classVariableName}ID]);
+  }
+
+  delete${className}(${classVariableName}: ${className}) {
+    this.${classVariableName}Service.delete${className}ById(${classVariableName}.id).subscribe(
+      data => this.updateListForDeletion(${classVariableName}), error1 => this.errorMessage = error1);
+  }
+
+  updateListForDeletion(${classVariableName}: ${className}){
+    const index = this.${classVariableName}s.indexOf(${classVariableName});
+    if (index >= 0) {
+      this.${classVariableName}s.splice(index, 1);
+    }
+  }
+
+}

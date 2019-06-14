@@ -1,0 +1,21 @@
+/**
+ * <p>Title         : ${className} Model
+ * <p>Project       : ${angularProjectName} : ${projectDescription}
+ * <p>Description   : ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+export class ${className} {
+
+
+	constructor(public ${idAttributeName} ?: number, ${attributesComma}) {
+
+	}
+
+
+    public toString(): string {
+        return ${attributesToString};
+    }
+
+}

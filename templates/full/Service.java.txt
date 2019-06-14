@@ -1,0 +1,49 @@
+package ${javaPackage}.service;
+
+
+import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.repo.${className}Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import javax.annotation.*;
+import java.util.*;
+
+/**
+ * <p>Title         : ${className}Service
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Service class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@Service
+public class ${className}Service {
+    @Autowired
+    ${className}Repository ${classVariableName}Repository;
+
+    public List<${className}> get${className}s(){
+        return ${classVariableName}Repository.findAll();
+    }
+
+    public Optional<${className}> getByID(Long id){
+         return ${classVariableName}Repository.findById(id);
+    }
+
+    public long save${className}(${className} ${classVariableName}){
+        if(${classVariableName} == null || !${classVariableName}.isValid() ) return -1;
+        ${className} saved${className} = ${classVariableName}Repository.saveAndFlush(${classVariableName});
+        if(saved${className} != null) return saved${className}.getId();
+        return -2;
+    }
+
+    public int deleteByID(long ${classVariableName}ID){
+        ${classVariableName}Repository.deleteById(${classVariableName}ID);
+        return 1;
+    }
+
+    @PostConstruct
+    public void initDB(){
+
+    }
+}

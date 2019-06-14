@@ -1,0 +1,16 @@
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
+${model.class.import}
+
+const routes: Routes = [
+  /* {path: '', redirectTo: '/users', pathMatch: 'full'},  exact match with empty path redirect to /users. pathMatch can be prefix or full  */
+${model.class.route}
+   {path: '**', component: PageNotFoundComponent} /* match anything that is not mentioned above */
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

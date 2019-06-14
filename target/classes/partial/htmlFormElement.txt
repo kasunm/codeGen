@@ -1,0 +1,4 @@
+    <div class="form-group">\n<label>${attributeDisplayName}</label>
+      <input formControlName="name" [class.is-invalid]="name.invalid && name.touched"  name="name" id="name" placeholder="${attributeDisplayName}" class="form-control"   />
+      <small class="text-danger" *ngIf="name.invalid  && name.touched">Name is required with at least 3 characters and cannot be system specific name like admin</small>
+    </div>

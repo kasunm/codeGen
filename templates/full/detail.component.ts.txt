@@ -1,0 +1,59 @@
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {${className}} from './user';
+import {${className}Service} from './user.service';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+
+
+
+@Component({
+  selector: 'app-${classFileAngular}-detail',
+  templateUrl: './${classFileAngular}-detail.component.html',
+  styleUrls: ['./${classFileAngular}-detail.component.scss']
+})
+export class ${className}DetailComponent implements OnInit {
+  ${classVariableName}DetailForm: FormGroup;
+  ${classVariableName}: ${className} = new ${className}();
+
+
+
+  constructor( private fb: FormBuilder, private ${classVariableName}Service: ${className}Service, private  route: ActivatedRoute, private  router: Router) { }
+
+  ngOnInit() {
+
+    this.${classVariableName}DetailForm = this.fb.group({
+      ${idAttributeName}: [''],
+      ${attribute.validation}
+    });
+
+
+    let id: any;
+    this.route.paramMap.subscribe( (params: ParamMap) => {
+      id = parseInt(params.get('id'));
+    });
+
+    if (id && id > 0) {
+      this.${classVariableName}Service.fetch${className}ById(id).subscribe(data => {
+        this.${classVariableName} = data;
+        this.${classVariableName}DetailForm.patchValue(this.${classVariableName});
+      }  );
+    } else {
+      //Add new or id not passed. Consider id: 0
+      this.${classVariableName} = new ${className}(0);
+    }
+  }
+
+  ${attribute.validator.get}
+
+
+  save${className}(){
+    console.log('Saving ${classNameDisplay}:' + this.${classVariableName}.toString());
+    /* Copy matching properties from form to ${classVariableName} object */
+    Object.keys(this.${classVariableName}DetailForm.value).forEach(key=>this.${classVariableName}[key]=this.${classVariableName}DetailForm.value[key]);
+    this.${classVariableName}Service.save${className}(this.${classVariableName})
+      .subscribe( data => this.router.navigate(['/${classURL}', {id: this.${classVariableName}.id, name: this.${classVariableName}.name}]), error1 => console.log(error1)
+      );
+  }
+
+
+}

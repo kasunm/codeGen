@@ -1,0 +1,37 @@
+package ${javaPackage}.model.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.util.*;
+
+import ${javaPackage}.model.enums.*;
+
+/**
+ * <p>Title         : ${className} entity
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${className} {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long ${idAttributeName};
+
+    ${classAttributes}
+
+    public boolean isValid(){
+        return true;
+    }
+}

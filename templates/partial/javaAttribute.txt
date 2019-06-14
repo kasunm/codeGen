@@ -1,0 +1,2 @@
+    ${attributeJavaHeader}
+    private ${type} ${attributeName};

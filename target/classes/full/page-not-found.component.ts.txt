@@ -1,0 +1,15 @@
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-page-not-found',
+  template: '<h3 class="alert-danger">\n The requested page cannot be found.\n</h3>',
+  styles: []
+})
+export class PageNotFoundComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+}

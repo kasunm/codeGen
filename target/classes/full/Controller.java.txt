@@ -1,0 +1,77 @@
+package ${javaPackage}.controller;
+
+
+import ${javaPackage}.model.dto.${className}DTO;
+import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.service.${className}Service;
+import io.swagger.annotations.Api;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * <p>Title         : ${className}Controller
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Controller class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@Api(basePath = "/${classURL}", value = "${className}Controller", description = "All services related to OR ${className}Controller", produces = "application/json")
+@RestController
+@CrossOrigin
+@RequestMapping("/${classURL}")
+public class ${className}Controller {
+    @Autowired
+    private ${className}Service ${classVariableName}Service;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    public ${className}Controller(){
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+    }
+
+    @GetMapping(path = "")
+    public List<${className}DTO> get${className}s(){
+        return  ${classVariableName}Service.get${className}s().stream().map( ${classVariableName} -> convertToDTO(${classVariableName})).collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "{id}")
+    public ResponseEntity<${className}DTO> get${className}s(@PathVariable Long id) {
+        Optional<${className}> ${classVariableName} = ${classVariableName}Service.getByID(id);
+        if(${classVariableName} != null && ${classVariableName}.isPresent()) return new ResponseEntity(convertToDTO(${classVariableName}.get()) , HttpStatus.ACCEPTED);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping(path = "")
+    public ResponseEntity<Long> save${className}(@RequestBody ${className}DTO ${classVariableName}){
+        long id = ${classVariableName}Service.save${className}(convertTo${className}(${classVariableName}));
+        if(id < 1) return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity(id, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Long> delete(@PathVariable("id") long id) {
+        ${classVariableName}Service.deleteByID(id);
+        return new ResponseEntity<Long>(id,new HttpHeaders(), HttpStatus.ACCEPTED);
+    }
+    /** ------------- Private supportive method ------------- */
+
+    private ${className}DTO convertToDTO(${className} ${classVariableName}){
+        return modelMapper.map(${classVariableName}, ${className}DTO.class);
+    }
+
+    private ${className} convertTo${className}(${className}DTO ${classVariableName}DTO){
+        return modelMapper.map(${classVariableName}DTO, ${className}.class);
+    }
+
+}

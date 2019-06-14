@@ -1,0 +1,20 @@
+package ${javaPackage}.repo;
+
+import ${javaPackage}.model.entity.${className};
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ${javaPackage}.model.enums.*;
+
+/**
+ * <p>Title         : ${className} Repository
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Repository support for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@Repository
+public interface ${className}Repository extends JpaRepository<${className}, Long> {
+
+
+}
