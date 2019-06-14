@@ -1,6 +1,6 @@
 <section class="container-fluid col-md-6">
     <h2 class="text-center">${classNameDisplay} Detail</h2>
-    <form [formGroup]="userDetailForm" (ngSubmit)="save${className}()">
+    <form [formGroup]="${classVariableName}DetailForm">
 
         <div class="text-hide">
             Values: {{${classVariableName}DetailForm.value | json}}
@@ -8,13 +8,11 @@
         </div>
 
         ${attributeFormElement}
-
-        <div class="form-group">
-            <input type="reset" name="reset" class="btn btn-primary" /> &nbsp;
-            <button class="btn btn-primary"  [disabled]="userDetailForm.invalid"   type="submit">Save</button>
-        </div>
-
-
     </form>
+
+      <div class="form-group">
+        <button class="btn btn-primary"  (click)="resetForm()"   type="button">Reset</button> &nbsp;
+        <button class="btn btn-primary"  [disabled]="${classVariableName}DetailForm.invalid" (click)="save${className}()"  type="button">Save</button>
+      </div>
 
 </section>

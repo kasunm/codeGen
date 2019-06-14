@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * @author Kasun Madurasinghe
  * @version 1.0
  */
-@Api(basePath = "/${classURL}", value = "${className}Controller", description = "All services related to OR ${className}Controller", produces = "application/json")
+@Api(basePath = "/${classURL}", value = "${className}Controller", description = "All services related to ${className}Controller", produces = "application/json")
 @RestController
 @CrossOrigin
 @RequestMapping("/${classURL}")
@@ -40,9 +40,13 @@ public class ${className}Controller {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
     }
 
+    /** ------------- Main service method ------------- */
+
     @GetMapping(path = "")
-    public List<${className}DTO> get${className}s(){
-        return  ${classVariableName}Service.get${className}s().stream().map( ${classVariableName} -> convertToDTO(${classVariableName})).collect(Collectors.toList());
+    public ResponseEntity<List<${className}DTO>> get${className}s(){
+        List<${className}DTO> ${classVariableName}s = ${classVariableName}Service.get${className}s().stream().map( ${classVariableName} -> convertToDTO(${classVariableName})).collect(Collectors.toList());
+        if(${classVariableName}s == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
+         else return new ResponseEntity(${classVariableName}s, HttpStatus.ACCEPTED);
     }
 
     @GetMapping(path = "{id}")

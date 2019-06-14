@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {${className}} from './user';
-import {${className}Service} from './user.service';
+import {${className}} from './${classFileAngular}';
+import {${className}Service} from './${classFileAngular}.service';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-
+${enumImports}
 
 
 @Component({
@@ -14,7 +14,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 export class ${className}DetailComponent implements OnInit {
   ${classVariableName}DetailForm: FormGroup;
   ${classVariableName}: ${className} = new ${className}();
-
+  ${detail.class.enumCollection}
 
 
   constructor( private fb: FormBuilder, private ${classVariableName}Service: ${className}Service, private  route: ActivatedRoute, private  router: Router) { }
@@ -51,9 +51,16 @@ export class ${className}DetailComponent implements OnInit {
     /* Copy matching properties from form to ${classVariableName} object */
     Object.keys(this.${classVariableName}DetailForm.value).forEach(key=>this.${classVariableName}[key]=this.${classVariableName}DetailForm.value[key]);
     this.${classVariableName}Service.save${className}(this.${classVariableName})
-      .subscribe( data => this.router.navigate(['/${classURL}', {id: this.${classVariableName}.id, name: this.${classVariableName}.name}]), error1 => console.log(error1)
+      .subscribe( data => this.router.navigate(['/${classURL}', {id: this.${classVariableName}.id}]), error1 => console.log(error1)
       );
   }
+
+    resetForm() {
+      this.${classVariableName}DetailForm.reset();
+      if (this.${classVariableName}.id > 0) {
+        this.${classVariableName}DetailForm.patchValue(this.${classVariableName});
+      }
+    }
 
 
 }

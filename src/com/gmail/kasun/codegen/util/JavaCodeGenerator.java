@@ -2,9 +2,11 @@ package com.gmail.kasun.codegen.util;
 
 import com.gmail.kasun.codegen.config.GlobalSettings;
 import com.gmail.kasun.codegen.model.ClassTemplate;
+import com.gmail.kasun.codegen.model.EnumTemplate;
 import com.gmail.kasun.codegen.model.Settings;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +50,24 @@ public class JavaCodeGenerator {
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
+        //Create enums
+        if(settings.enums == null || settings.enums.size() < 1){
+            settings.enums = new ArrayList<EnumTemplate>();
+            settings.enums.add(new EnumTemplate("ServiceStatus", "SUCCESS, FAIL, NOT_FOUND, ERROR"));
+        }
+        for(EnumTemplate enumTemplate: settings.enums){
+            Map classSettings = new HashMap<String, String>();
+            classSettings.put("javaPackage", settings.javaPackage );
+            classSettings.put("javaProjectName", settings.javaProjectName );
+            classSettings.put("projectDescription", settings.projectDescription );
+            classSettings.put("enumName", enumTemplate.enumName);
+            classSettings.put("enumValues", enumTemplate.enumValues);
+            String templateText = TemplateUtils.getInstance().readTemplateFile("enum.class", false);
+            TemplateUtils.getInstance().replaceVariablesAndWrite(templateText, classSettings, settings.getJavaPackageRoot() + File.separator + "model" + File.separator + "enums", enumTemplate.enumName + ".java", settings);
+
+        }
+
+
         for(ClassTemplate template: settings.classes){
             Map classSettings = new HashMap<String, String>();
             classSettings.put("javaPackage", settings.javaPackage );

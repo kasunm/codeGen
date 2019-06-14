@@ -8,6 +8,9 @@ import com.gmail.kasun.codegen.util.TemplateUtils;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,29 +28,53 @@ public class CodeGenerator {
 
     public static void main(String[] args) throws Exception{
         //MiscUtils.createAngularProject("F:/Develpment", "pissu");
-        Settings settings = getTestSettings();
+        if(args == null || args.length < 1){
+            System.out.println("Specify json file as argument");
+            return;
+        }
+        CodeGenerator codeGenerator = new CodeGenerator();
+
+        Settings settings = codeGenerator.loadSettingsFromJsonFile(args[0]);
+        if(settings == null){
+            System.out.println("Invalid Json file format");
+            return;
+        }
+
+        //Settings settings = getTestSettings();
 
         String test = "<attributeName>${javaProjectName}</attributeName>";
         System.out.println( TemplateUtils.getInstance().replaceVariables(test, settings.getProjectSettings()));
         System.out.println( new Gson().toJson(settings));
-        ClassTemplate ct = settings.classes.get(0);
-        Map<String,String> tags = new HashMap<String, String>();
-        MiscUtils.addClassStringAttributes(ct, tags);
-        System.out.println(tags.keySet());
-        System.out.println(StringUtils.capitalize(MiscUtils.splitCamelCase("userName"," ")));
+
 
 
         //settings.generateProjectsAndDirectoryStructure();
 
-        //JavaCodeGenerator.getInstance().generateCode(settings);
+        JavaCodeGenerator.getInstance().generateCode(settings);
 
         AngularCodeGenerate.getInstance().generateCode(settings);
 
+    }
 
+    public void generate(String filePath) throws Exception{
+        loadSettingsFromJsonFile(filePath);
+    }
+
+    private Settings loadSettingsFromJsonFile(String filePath) throws IOException {
+        if(StringUtils.isEmpty(filePath)) return null;
+        File file = new File(filePath);
+        if(!file.exists()) return null;
+        FileInputStream fis = new FileInputStream(file);
+        byte[] data = new byte[(int) file.length()];
+        fis.read(data);
+        fis.close();
+        String str = new String(data, "UTF-8");
+        if(StringUtils.isEmpty(str)) return null;
+        return new Gson().fromJson(str, Settings.class);
     }
 
     public static Settings getTestSettings(){
-        Settings settings = new Settings("Aggala", "A food out let specialized for Aggala", "F:/Develpment/Aggala","com.kasunm.aggala", "AggalaUI", "F:/Develpment/Aggala", Boolean.FALSE, Boolean.FALSE);
+        Settings settings = new Settings("Aggalakan", "A food out let specialized for Aggala", "F:/Develpment/Aggala","com.kasunm.aggala", "AggalaUI", "F:/Develpment/Aggala", Boolean.FALSE, Boolean.FALSE);
 
         settings.dbName = "users";
         settings.dbUserName = "appartmentadmin";
@@ -61,8 +88,13 @@ public class CodeGenerator {
         attributeTemplateList.add(new AttributeTemplate("password", AttributeType.STRING, 0, 20, false));
         attributeTemplateList.add(new AttributeTemplate("age", AttributeType.INT, 0, 900));
         attributeTemplateList.add(new AttributeTemplate("favouriteColors", AttributeType.STRING, CollectionType.List));
+        attributeTemplateList.add(new AttributeTemplate("gender", AttributeType.ENUM, "Gender"));
         classTemplate.attributes = attributeTemplateList;
         settings.classes.add(classTemplate);
+
+        List<EnumTemplate> enums = new ArrayList<>();
+        enums.add(new EnumTemplate("Gender", "MALE,FEMALE,SHEMALE,OTHER"));
+        settings.enums = enums;
         return settings;
     }
 

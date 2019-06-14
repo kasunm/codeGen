@@ -1,0 +1,16 @@
+package ${javaPackage}.model.enums;
+
+
+
+/**
+ * <p>Title         : ${enumName} Enum
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   :
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+public enum ${enumName} {
+
+    ${enumValues}
+}

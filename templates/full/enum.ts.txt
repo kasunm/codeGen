@@ -1,0 +1,11 @@
+/**
+ * <p>Title         : ${enumName}
+ * <p>Project       : ${angularProjectName} : ${projectDescription}
+ * <p>Description   : ${enumName}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+export enum ${enumName} {
+    ${enumValues}
+}

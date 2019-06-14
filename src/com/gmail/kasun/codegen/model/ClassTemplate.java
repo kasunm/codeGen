@@ -87,18 +87,32 @@ public class ClassTemplate {
         return map;
     }
 
+    public String getPopulatesAngularAttributeNames(String partialTemplateText,  boolean showInGrid){
+        return getPopulatesAngularAttributeNames(partialTemplateText, "", showInGrid);
+    }
 
-    public String getPopulatesAngularAttributeNames(String partialTemplateText, boolean showInGrid){
+    public String getPopulatesAngularAttributeNames(String partialTemplateText, String enumSpecialTemplate, boolean showInGrid){
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if(showInGrid && (attribute.showOnGrid == null || !attribute.showOnGrid)) continue;
+
             if(count ++ > 0) sb.append("\n");
-            sb.append(partialTemplateText.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
-                    .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
-                    .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
-                    .replaceAll("\\$\\{classVariableName\\}", classVariableName)
-            );
+            if(attribute.type == AttributeType.ENUM && !StringUtils.isEmpty(enumSpecialTemplate)){
+                sb.append(enumSpecialTemplate.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
+                        .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
+                        .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
+                        .replaceAll("\\$\\{classVariableName\\}", classVariableName)
+                );
+            }else{
+                sb.append(partialTemplateText.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
+                        .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
+                        .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
+                        .replaceAll("\\$\\{classVariableName\\}", classVariableName)
+                );
+            }
+
         }
         return sb.toString();
     }
@@ -126,6 +140,7 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if( count++ > 0) sb.append(", ");
             sb.append(attribute.getAngularAttribute());
         }
@@ -136,6 +151,7 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if(skipLast && count++ > 0) sb.append(separator);
             sb.append(attribute);
         }
@@ -146,8 +162,36 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if(count++ > 0) sb.append(" + ', ' + ");
             sb.append("'"+attribute.attributeName+":' + this."+attribute.attributeName+"" );
+        }
+        return sb.toString();
+    }
+
+    public String getEnumImports(){
+        StringBuilder sb = new StringBuilder(300);
+        sb.append("\n");
+        for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
+            if(attribute.type == AttributeType.ENUM){
+                sb.append("import {" + attribute.classTypeName +"} from '../enums/" + MiscUtils.splitCamelCase(attribute.classTypeName, "-").toLowerCase() +".enum';\n" );
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getEnumKeys(String templateText){
+        StringBuilder sb = new StringBuilder(300);
+        sb.append("\n");
+        for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
+            if(attribute.type == AttributeType.ENUM){
+                Map<String, String> tags = new HashMap<String, String>();
+                tags.put("enumName", attribute.classTypeName);
+                tags.put("enumVariableName", StringUtils.uncapitalize(attribute.classTypeName));
+                sb.append(TemplateUtils.getInstance().replaceVariables(templateText, tags));
+            }
         }
         return sb.toString();
     }

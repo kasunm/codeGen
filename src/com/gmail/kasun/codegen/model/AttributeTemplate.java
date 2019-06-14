@@ -18,6 +18,7 @@ import java.util.Properties;
  */
 public class AttributeTemplate {
     public String attributeName;
+    public String classTypeName;
     public AttributeType type = AttributeType.STRING;
     public CollectionType collectionType = CollectionType.None;
     public Integer min;
@@ -33,6 +34,12 @@ public class AttributeTemplate {
 
     public AttributeTemplate(String attributeName) {
         this.attributeName = attributeName;
+    }
+
+    public AttributeTemplate(String attributeName, AttributeType type, String classTypeName) {
+        this.attributeName = attributeName;
+        this.type = type;
+        this.classTypeName = classTypeName;
     }
 
     public AttributeTemplate(String attributeName, AttributeType type) {
@@ -82,10 +89,10 @@ public class AttributeTemplate {
         attributeVariables.put("attributeName",attributeName);
 
         if(collectionType == null || collectionType == CollectionType.None){
-            attributeVariables.put("type", type.javaName);
+            attributeVariables.put("type", getJavaName());
         }
         else {
-            attributeVariables.put("type", collectionType.angularName.replaceAll("type", type.angularName).replaceAll("key", keyType));
+            attributeVariables.put("type", collectionType.javaName.replaceAll("type", getJavaName()).replaceAll("key", keyType));
         }
 
         //Headers
@@ -99,6 +106,11 @@ public class AttributeTemplate {
         attributeVariables.put("attributeJavaHeader",header.toString());
 
         return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
+    }
+
+    private String getJavaName() {
+        if(type == AttributeType.CLASS || type == AttributeType.ENUM) return classTypeName;
+        else return type.javaName;
     }
 
     private void addMinMaxJava(StringBuilder header) {
@@ -123,9 +135,14 @@ public class AttributeTemplate {
     public String getAngularAttribute(){
         return "public " + attributeName +  "?: "
                 + ((collectionType == null || collectionType == CollectionType.None) ?
-                type.angularName: collectionType.angularName.replaceAll("type", type.angularName).replaceAll("key", keyType)
+                getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
         );
 
+    }
+
+    private String getAngularName() {
+        if(type == AttributeType.CLASS || type == AttributeType.ENUM ) return classTypeName;
+        return type.angularName;
     }
 
     public String getAngularErrorMessage(){
@@ -190,7 +207,7 @@ public class AttributeTemplate {
         if(collectionType != null && collectionType !=  CollectionType.None){
             return "attribute.form.input.select.multi";
         }
-        if(type.isEnum) return "attribute.form.input.select.enum";
+        if(type == AttributeType.ENUM) return "attribute.form.input.select.enum";
         if(type == AttributeType.INT || type == AttributeType.LONG || type == AttributeType.DOUBLE){
             return "attribute.form.input.number";
         }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.*;
 import java.util.*;
+import org.springframework.transaction.annotation.*;
+
 
 /**
  * <p>Title         : ${className}Service
@@ -22,14 +24,17 @@ public class ${className}Service {
     @Autowired
     ${className}Repository ${classVariableName}Repository;
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
     public List<${className}> get${className}s(){
         return ${classVariableName}Repository.findAll();
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
     public Optional<${className}> getByID(Long id){
          return ${classVariableName}Repository.findById(id);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
     public long save${className}(${className} ${classVariableName}){
         if(${classVariableName} == null || !${classVariableName}.isValid() ) return -1;
         ${className} saved${className} = ${classVariableName}Repository.saveAndFlush(${classVariableName});
@@ -37,6 +42,7 @@ public class ${className}Service {
         return -2;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
     public int deleteByID(long ${classVariableName}ID){
         ${classVariableName}Repository.deleteById(${classVariableName}ID);
         return 1;

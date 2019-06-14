@@ -1,9 +1,5 @@
 package com.gmail.kasun.codegen.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * <p>Title         : ${FILE_NAME}
  * <p>Project       : SpanCodeGenerator
@@ -14,10 +10,11 @@ import java.util.List;
  */
 public class EnumTemplate {
     public String enumName;
-    public String values;
+    public String enumValues;
+
 
     public EnumTemplate(String enumName,String values ) {
         this.enumName = enumName;
-        this.values = values;
+        this.enumValues = values;
     }
 }

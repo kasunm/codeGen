@@ -1,6 +1,7 @@
 package com.gmail.kasun.codegen.util;
 
 import com.gmail.kasun.codegen.model.ClassTemplate;
+import com.gmail.kasun.codegen.model.EnumTemplate;
 import com.gmail.kasun.codegen.model.Settings;
 
 import java.io.File;
@@ -70,12 +71,24 @@ public class AngularCodeGenerate {
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
+        for(EnumTemplate template: settings.enums){
+            Map classSettings = new HashMap<String, String>();
+            classSettings.put("angularProjectName", settings.angularProjectName );
+            classSettings.put("projectDescription", settings.projectDescription );
+            classSettings.put("enumName", template.enumName);
+            classSettings.put("enumValues", template.enumValues);
+            String templateText = TemplateUtils.getInstance().readTemplateFile("enum.ts", false);
+            TemplateUtils.getInstance().replaceVariablesAndWrite(templateText, classSettings, settings.getAngularPackageRoot() + File.separator + "enums", MiscUtils.splitCamelCase(template.enumName, "-").toLowerCase() + ".enum.ts", settings);
+        }
+
         for(ClassTemplate template: settings.classes){
             Map classSettings = new HashMap<String, String>();
             classSettings.put("angularProjectName", settings.angularProjectName );
             classSettings.put("projectDescription", settings.projectDescription );
             classSettings.put("attributesComma", template.getAngularConstructor());
             classSettings.put("attributesToString", template.getToString());
+            classSettings.put("enumImports", template.getEnumImports());
+            classSettings.put("detail.class.enumCollection", template.getEnumKeys(getTag("detail.class.enumCollection")));
 
             //Model
             String templateText = TemplateUtils.getInstance().readTemplateFile("class.ts", false);
@@ -86,8 +99,8 @@ public class AngularCodeGenerate {
             template.generateFile(template.getClassFileAngular() + ".service.ts", settings.getAngularPackageRoot()+ File.separator + template.classURL, settings, templateText, classSettings, false, false);
 
             //List generations
-            classSettings.put("attribute.th", template.getPopulatesAngularAttributeNames(getTag("attribute.th"), false));
-            classSettings.put("attribute.td", template.getPopulatesAngularAttributeNames(getTag("attribute.td"), false));
+            classSettings.put("attribute.th", template.getPopulatesAngularAttributeNames(getTag("attribute.th"),  true));
+            classSettings.put("attribute.td", template.getPopulatesAngularAttributeNames(getTag("attribute.td"), getTag("attribute.td.enum"), true));
             template.generateFile(template.getClassFileAngular() + "-list.component.scss", settings.getAngularPackageRoot()+ File.separator + template.classURL, settings, " ", classSettings, false, false);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("list.component.html", false);

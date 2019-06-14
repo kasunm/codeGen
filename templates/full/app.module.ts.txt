@@ -26,7 +26,7 @@ ${model.class.import}
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [UserService, {
+  providers: [ {
     provide: HTTP_INTERCEPTORS,
     useClass: HttpErrorInterceptor,
     multi: true

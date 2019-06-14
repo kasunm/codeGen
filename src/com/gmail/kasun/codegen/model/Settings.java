@@ -37,6 +37,8 @@ public class Settings {
     public boolean generateNewJavaProject;
 
     public List<ClassTemplate> classes;
+    public List<EnumTemplate> enums;
+
 
     public Settings(String javaProjectName, String projectDescription, String javaProjectBasePath, String javaPackage, String angularProjectName, String angularProjectBasePath, boolean generateNewAngularProject, boolean generateNewJavaProject) {
         this.javaProjectName = javaProjectName;
