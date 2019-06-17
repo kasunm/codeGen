@@ -47,14 +47,16 @@ public class JavaCodeGenerator {
         TemplateUtils.getInstance().generateFixedFile(settings, "pom.xml", settings.getJavaProjecteRoot(), settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "SwaggerConfig.java", settings.getJavaPackageRoot() +  File.separator + GlobalSettings.JavaDirectory.config  , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "MainApplication.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
         //Create enums
         if(settings.enums == null || settings.enums.size() < 1){
             settings.enums = new ArrayList<EnumTemplate>();
-            settings.enums.add(new EnumTemplate("ServiceStatus", "SUCCESS, FAIL, NOT_FOUND, ERROR"));
         }
+        settings.enums.add(new EnumTemplate("ServiceStatus", "SUCCESS, NOT_FOUND, INVALID_PARAMS, DB_ERROR"));
         for(EnumTemplate enumTemplate: settings.enums){
             Map classSettings = new HashMap<String, String>();
             classSettings.put("javaPackage", settings.javaPackage );
@@ -83,6 +85,8 @@ public class JavaCodeGenerator {
             templateText = TemplateUtils.getInstance().readTemplateFile("Repository.java", false);
             template.generateFile(template.className + "Repository.java", settings.getJavaPackageRoot() + File.separator + File.separator + "repo", settings, templateText, classSettings, false, false);
 
+            templateText = TemplateUtils.getInstance().readTemplateFile("MainService.java", false);
+            template.generateFile("Main" + template.className + "Service.java", settings.getJavaPackageRoot() + File.separator +   File.separator + "service", settings, templateText, classSettings, false, false);
             templateText = TemplateUtils.getInstance().readTemplateFile("Service.java", false);
             template.generateFile(template.className + "Service.java", settings.getJavaPackageRoot() + File.separator +   File.separator + "service", settings, templateText, classSettings, false, false);
 

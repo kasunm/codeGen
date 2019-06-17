@@ -1,3 +1,5 @@
+${enumImports}
+
 /**
  * <p>Title         : ${className} Model
  * <p>Project       : ${angularProjectName} : ${projectDescription}

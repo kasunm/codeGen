@@ -1,0 +1,77 @@
+package ${javaPackage}.service;
+
+
+import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.repo.${className}Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import javax.annotation.*;
+import java.util.*;
+import org.springframework.transaction.annotation.*;
+
+
+/**
+ * <p>Title         : ${className}Service
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Service class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@Service
+public class Main${className}Service implements ${className}Service{
+    @Autowired
+    ${className}Repository ${classVariableName}Repository;
+
+    /**
+     * Get all ${classVariableName}s
+     * @return List<${className}>
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<${className}> get${className}s(){
+        return ${classVariableName}Repository.findAll();
+    }
+
+    /**
+     * Get a specific ${classVariableName} by id
+     * @param id Long
+     * @return Optional<${className}>
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
+    public Optional<${className}> getByID(Long id){
+         return ${classVariableName}Repository.findById(id);
+    }
+
+    /**
+     * Save ${classVariableName} and set id to passed ${classVariableName}
+     * @param ${classVariableName} ${className}
+     * @return ServiceStatus
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
+    public ServiceStatus save${className}(${className} ${classVariableName}){
+        if(${classVariableName} == null || !${classVariableName}.isValid() ) return ServiceStatus.INVALID_PARAMS;
+        ${className} saved${className} = ${classVariableName}Repository.saveAndFlush(${classVariableName});
+        if(saved${className} != null) {
+            ${classVariableName}.setId(saved${className}.getId());
+            return ServiceStatus.SUCCESS;
+        }
+        return ServiceStatus.DB_ERROR;
+    }
+
+    /**
+     * Delete a ${classVariableName} by ID
+     * @param ${classVariableName}ID long
+     * @return ServiceStatus
+     */
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
+    public ServiceStatus deleteByID(long ${classVariableName}ID){
+        ${classVariableName}Repository.deleteById(${classVariableName}ID);
+         return ServiceStatus.SUCCESS;
+    }
+
+    @PostConstruct
+    public void initDB(){
+
+    }
+}

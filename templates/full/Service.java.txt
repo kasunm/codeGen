@@ -3,7 +3,6 @@ package ${javaPackage}.service;
 
 import ${javaPackage}.model.entity.${className};
 import ${javaPackage}.model.enums.*;
-import ${javaPackage}.repo.${className}Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.*;
@@ -19,37 +18,35 @@ import org.springframework.transaction.annotation.*;
  * @author Kasun Madurasinghe
  * @version 1.0
  */
-@Service
-public class ${className}Service {
-    @Autowired
-    ${className}Repository ${classVariableName}Repository;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<${className}> get${className}s(){
-        return ${classVariableName}Repository.findAll();
-    }
+public interface ${className}Service {
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS, readOnly = true)
-    public Optional<${className}> getByID(Long id){
-         return ${classVariableName}Repository.findById(id);
-    }
+    /**
+     * Get all ${classVariableName}s
+     * @return List<${className}>
+     */
+    public List<${className}> get${className}s();
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
-    public long save${className}(${className} ${classVariableName}){
-        if(${classVariableName} == null || !${classVariableName}.isValid() ) return -1;
-        ${className} saved${className} = ${classVariableName}Repository.saveAndFlush(${classVariableName});
-        if(saved${className} != null) return saved${className}.getId();
-        return -2;
-    }
+    /**
+     * Get a specific ${classVariableName} by id
+     * @param id Long
+     * @return Optional<${className}>
+     */
+    public Optional<${className}> getByID(Long id);
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
-    public int deleteByID(long ${classVariableName}ID){
-        ${classVariableName}Repository.deleteById(${classVariableName}ID);
-        return 1;
-    }
+    /**
+     * Save ${classVariableName} and set id to passed ${classVariableName}
+     * @param ${classVariableName} ${className}
+     * @return ServiceStatus
+     */
+    public ServiceStatus save${className}(${className} ${classVariableName});
 
-    @PostConstruct
-    public void initDB(){
+    /**
+     * Delete a ${classVariableName} by ID
+     * @param ${classVariableName}ID long
+     * @return ServiceStatus
+     */
+    public ServiceStatus deleteByID(long ${classVariableName}ID);
 
-    }
+
 }

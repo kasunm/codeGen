@@ -1,0 +1,77 @@
+package ${javaPackage}.error;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.stream.Collectors;
+
+/**
+ * <p>Title         : ${FILE_NAME}
+ * <p>Project       : Aggala
+ * <p>Description   :
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@ControllerAdvice
+@RestController
+public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+    private Logger logger = LoggerFactory.getLogger("CustomizedResponseEntityExceptionHandler");
+
+    /**
+     * Handle all bean validation error
+     * @param ex
+     * @param headers
+     * @param status
+     * @param request
+     * @return
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName()
+               , new ArrayList<String>());
+        logger.error("Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName());
+        //Get all errors
+        errorDetails.setDetails( ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(filedError -> filedError.getDefaultMessage())
+                .collect(Collectors.toList()));
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+    /**
+     * Handle internal server errors cleanly
+     * @param ex
+     * @param body
+     * @param headers
+     * @param status
+     * @param request
+     * @return ResponseEntity<Object>
+     */
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Internal error occurred" +  ex.getMessage()
+                , new ArrayList<String>());
+        errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
+                error -> error.getClassName() + " - " + error.getMethodName()
+        ).collect(Collectors.toList()));
+        logger.error("ERROR: Internal error occurred" +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+}
