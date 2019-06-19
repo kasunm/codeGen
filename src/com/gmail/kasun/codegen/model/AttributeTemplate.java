@@ -195,6 +195,11 @@ public class AttributeTemplate {
         attributeVariables.put("attributeName",attributeName);
         attributeVariables.put("attributeDisplayName",getDisplayName());
         attributeVariables.put("attributeError",getAngularErrorMessage());
+        if(type == AttributeType.ENUM){
+            attributeVariables.put("enumName", classTypeName);
+            attributeVariables.put("enumVariableName", StringUtils.uncapitalize(classTypeName));
+        }
+
         sb.append(TemplateUtils.getInstance().replaceVariables(prop.getProperty(getFormComponentName()), attributeVariables));
         sb.append("\n");
     }

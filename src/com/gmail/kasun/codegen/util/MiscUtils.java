@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +62,9 @@ public class MiscUtils {
 
     public static void createAngularProject(String baseDirectory, String name){
         MiscUtils.executeShellCommand("ng new " + name + " --style=scss --routing=true", baseDirectory);
-        MiscUtils.executeShellCommand("npm install bootstrap ngx-bootstrap --save" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install --save jquery" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install --save  popper.js" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install --save @ng-bootstrap/ng-bootstrap" , baseDirectory + File.separator + name);
     }
 
     public static void addAngularComponent(String baseDirectory, String name){
