@@ -47,8 +47,8 @@ public class JavaCodeGenerator {
         TemplateUtils.getInstance().generateFixedFile(settings, "pom.xml", settings.getJavaProjecteRoot(), settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "SwaggerConfig.java", settings.getJavaPackageRoot() +  File.separator + GlobalSettings.JavaDirectory.config  , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "MainApplication.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
-        TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
-        TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot() + File.separator + "error"   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()  + File.separator + "error"   , settings.getProjectSettings());
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
