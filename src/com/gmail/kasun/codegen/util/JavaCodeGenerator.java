@@ -46,6 +46,7 @@ public class JavaCodeGenerator {
         TemplateUtils.getInstance().generateFixedFile(settings, "application.properties", settings.getJavaProjecteRoot() +  File.separator + "src" + File.separator + "main" + File.separator + "resources"   , settings.getDBSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "pom.xml", settings.getJavaProjecteRoot(), settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "SwaggerConfig.java", settings.getJavaPackageRoot() +  File.separator + GlobalSettings.JavaDirectory.config  , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "AppConfig.java", settings.getJavaPackageRoot() +  File.separator + GlobalSettings.JavaDirectory.config  , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "MainApplication.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot() + File.separator + "error"   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()  + File.separator + "error"   , settings.getProjectSettings());
@@ -69,13 +70,15 @@ public class JavaCodeGenerator {
 
         }
 
-
+        StringBuilder messageResources = new StringBuilder(2000);
         for(ClassTemplate template: settings.classes){
             Map classSettings = new HashMap<String, String>();
             classSettings.put("javaPackage", settings.javaPackage );
             classSettings.put("javaProjectName", settings.javaProjectName );
             classSettings.put("projectDescription", settings.projectDescription );
 
+
+            template.addJavaAttributeResources(messageResources);
             String templateText = TemplateUtils.getInstance().readTemplateFile("Entity.java", false);
             template.generateFile(template.className + ".java", settings.getJavaPackageRoot() + File.separator +  "model" + File.separator + "entity", settings, templateText, classSettings, true, true);
 
@@ -93,5 +96,6 @@ public class JavaCodeGenerator {
             templateText = TemplateUtils.getInstance().readTemplateFile("Controller.java", false);
             template.generateFile(template.className + "Controller.java", settings.getJavaPackageRoot() + File.separator  + File.separator + "controller", settings, templateText, classSettings, false, false);
         }
+        TemplateUtils.getInstance().writeToFile(messageResources.toString(), settings.getJavaProjecteRoot() +  File.separator + "src" + File.separator + "main" + File.separator + "resources", "messages.properties", settings);
     }
 }

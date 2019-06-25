@@ -33,31 +33,19 @@ public class CodeGenerator {
             return;
         }
         CodeGenerator codeGenerator = new CodeGenerator();
-
-        Settings settings = codeGenerator.loadSettingsFromJsonFile(args[0]);
-        if(settings == null){
-            System.out.println("Invalid Json file format");
-            return;
-        }
-
-        //Settings settings = getTestSettings();
-
-        String test = "<attributeName>${javaProjectName}</attributeName>";
-        System.out.println( TemplateUtils.getInstance().replaceVariables(test, settings.getProjectSettings()));
-        System.out.println( new Gson().toJson(settings));
-
-
-
-        //settings.generateProjectsAndDirectoryStructure();
-
-        JavaCodeGenerator.getInstance().generateCode(settings);
-
-        AngularCodeGenerate.getInstance().generateCode(settings);
+        codeGenerator.generate(args[0]);
 
     }
 
     public void generate(String filePath) throws Exception{
-        loadSettingsFromJsonFile(filePath);
+        Settings settings = loadSettingsFromJsonFile(filePath);
+        if(settings == null){
+            System.out.println("Invalid Json file format");
+            return;
+        }
+        settings.generateProjectsAndDirectoryStructure();
+        JavaCodeGenerator.getInstance().generateCode(settings);
+        AngularCodeGenerate.getInstance().generateCode(settings);
     }
 
     private Settings loadSettingsFromJsonFile(String filePath) throws IOException {

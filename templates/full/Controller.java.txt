@@ -83,17 +83,18 @@ public class ${className}Controller {
     @PostMapping(path = "")
     public ResponseEntity<Long> save${className}(@RequestBody @Valid ${className}DTO ${classVariableName}) throws Exception{
         logger.debug("Request to save ${classNameDisplay}");
-        ${className} save${className} = new ${className}();
+        ${className} existing${className} = new ${className}();
         if(${classVariableName}.getId() != null && ${classVariableName}.getId() > 0) {
             //In case not all persistent attributes not present in update DTO
             Optional<${className}> saved${className} = ${classVariableName}Service.getByID(${classVariableName}.getId());
-            if(saved${className}.isPresent()) save${className} = saved${className}.get();
+            if(saved${className}.isPresent()) existing${className} = saved${className}.get();
             else{
                 logger.error("${classNameDisplay} with id " + ${classVariableName}.getId() + " is not present, yet ${classVariableName} is trying to update");
                 return new ResponseEntity(HttpStatus.NOT_FOUND);
             }
         }
-        ServiceStatus serviceStatus = ${classVariableName}Service.save${className}(convertTo${className}(${classVariableName}));
+         ${className} save${className} = copyTo${className}(${classVariableName}, existing${className});
+            ServiceStatus serviceStatus = ${classVariableName}Service.save${className}(save${className});
          if(serviceStatus == ServiceStatus.SUCCESS){
             return  ResponseEntity.created (new URI("/${classURL}/" + save${className}.getId())).body(save${className}.getId());
         }else if(serviceStatus == ServiceStatus.INVALID_PARAMS){

@@ -3,12 +3,12 @@
   "javaPackage":"com.kasunm.aggala",
   "javaProjectBasePath":"F:/Develpment/Aggala",
   "projectDescription":"A food out let specialized for Aggala",
-  "angularProjectName":"AggalaUI",
+  "angularProjectName":"AggalaTest",
   "angularProjectBasePath":"F:/Develpment/Aggala",
   "dbName":"users",
   "dbUserName":"appartmentadmin",
   "dbPassword":"Super",
-  "generateNewAngularProject":false,
+  "generateNewAngularProject":true,
   "generateNewJavaProject":false,
   "classes":[
     {
@@ -67,6 +67,14 @@
           "attributeName":"gender",
           "classTypeName":"Gender",
           "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"createdDate",
+          "type":"DATETIME",
           "collectionType":"None",
           "required":false,
           "showOnGrid":true,

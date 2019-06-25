@@ -4,7 +4,6 @@ import com.gmail.kasun.codegen.util.MiscUtils;
 import com.gmail.kasun.codegen.util.TemplateUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.beans.Transient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class ClassTemplate {
         StringBuilder attributeText = new StringBuilder(1000);
         if(attributes == null) return "";
         for(AttributeTemplate template: attributes){
-            attributeText.append(template.getJavaAttribute(isEntityClass));
+            attributeText.append(template.getJavaAttribute(isEntityClass, className));
             attributeText.append("\n");
         }
         return attributeText.toString();
@@ -115,6 +114,12 @@ public class ClassTemplate {
 
         }
         return sb.toString();
+    }
+
+    public void addJavaAttributeResources(StringBuilder resources) throws Exception{
+        for(AttributeTemplate attribute: attributes){
+            attribute.addJavaAttributeResources(resources, className, classNameDisplay);
+        }
     }
 
     public String getAttributeFormElementHTML(Properties props){

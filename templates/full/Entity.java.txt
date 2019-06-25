@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.*;
+import java.time.*;
 
 import ${javaPackage}.model.enums.*;
 

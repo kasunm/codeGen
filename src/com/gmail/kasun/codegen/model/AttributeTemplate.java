@@ -82,7 +82,7 @@ public class AttributeTemplate {
 
     /** -------------- Java support methods -------------- **/
 
-    public String getJavaAttribute(boolean isEntityClass) throws Exception{
+    public String getJavaAttribute(boolean isEntityClass, String className) throws Exception{
         if(StringUtils.isEmpty(javaTemplateText)) javaTemplateText = TemplateUtils.getInstance().readTemplateFile("javaAttribute", true);
 
         Map<String,String> attributeVariables = new HashMap<String,String>();
@@ -101,11 +101,27 @@ public class AttributeTemplate {
         if(isEntityClass && collectionType != null && collectionType != CollectionType.None && !type.isCustomClass()){
             header.append("\n\t@ElementCollection"); //Entity collection
         }
-        addMinMaxJava(header);
-        if(required) header.append("\n\t@NotNull");
+        addMinMaxJava(header, className);
+        if(required){
+            header.append("\n\t@NotNull(message = \"{" + className + "." + attributeName + ".required" +"}\")");
+        }
+        if(!StringUtils.isEmpty(validatorRegex)){
+            header.append("\n\t@Pattern(regexp = \""+validatorRegex+"\", message = \"{"+ className + "." + attributeName + ".pattern}\")");
+        }
         attributeVariables.put("attributeJavaHeader",header.toString());
 
         return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
+    }
+
+
+    public void addJavaAttributeResources(StringBuilder resources, String className, String humanClassName) throws Exception{
+        addMinMaxResources(resources, className,humanClassName);
+        if(required){
+            resources.append("\n" + className + "." + attributeName + ".required=" + humanClassName + " " + attributeName + " is required");
+        }
+        if(!StringUtils.isEmpty(validatorRegex)){
+            resources.append("\n"+ className + "." + attributeName + ".pattern=Expects " + humanClassName + " " + attributeName + " in valid format");
+        }
     }
 
     private String getJavaName() {
@@ -113,19 +129,38 @@ public class AttributeTemplate {
         else return type.javaName;
     }
 
-    private void addMinMaxJava(StringBuilder header) {
+    private void addMinMaxJava(StringBuilder header, String className) {
+        boolean sizePresent = min != null || max != null;
+        if(!sizePresent) return;
         if(type == AttributeType.STRING){
-            boolean sizePresent = min != null && max != null;
-            if(sizePresent) header.append("\n\t@Size(");
-
+            header.append("\n\t@Size(");
             if(min != null){
                 header.append("min = " + min);
-                if(max != null) header.append(", max = " + max);
+                if(max != null) header.append(", max = " + max );
             } else if(max != null) header.append("max = " + max);
-            if(sizePresent) header.append(")");
+            header.append( ", message=\"{"+ className + "." + attributeName + ".length}\"" + ")");
         }else{
-            if(min != null) header.append("\n\t@Min( value = " + min + ")");
-            if(max != null) header.append("\n\t@Max( value = " + max + ")");
+            if(min != null) header.append("\n\t@Min( value = " + min + ", message=\"{"+ className + "." + attributeName + ".min}\"" + ")");
+            if(max != null) header.append("\n\t@Max( value = " + max + ", message=\"{"+ className + "." + attributeName + ".max}\"" + ")");
+        }
+    }
+
+    private void addMinMaxResources(StringBuilder header, String className, String classHumanName) {
+        boolean sizePresent = min != null || max != null;
+        if(!sizePresent) return;
+
+
+        if(type == AttributeType.STRING){
+            header.append("\n" + className + "." + attributeName + ".length=");
+            StringBuilder value = new StringBuilder(50);
+            if(min != null){
+                if(max != null) value.append(classHumanName + " length must be between " + min + " and " + max + " characters");
+                else value.append(classHumanName + " must at least have " + min + " characters");
+            } else if(max != null) value.append(classHumanName + " must not exceed " + min + " characters");
+            header.append(value.toString());
+        }else{
+            if(min != null) header.append("\n"+ className + "." + attributeName + ".min=" +classHumanName + " " + attributeName +  " must not be smaller than " + min);
+            if(max != null) header.append("\n"+ className + "." + attributeName + ".max=" +classHumanName + " " + attributeName +  " must not be larger than " + max);
         }
     }
 
@@ -215,6 +250,9 @@ public class AttributeTemplate {
         if(type == AttributeType.ENUM) return "attribute.form.input.select.enum";
         if(type == AttributeType.INT || type == AttributeType.LONG || type == AttributeType.DOUBLE){
             return "attribute.form.input.number";
+        }
+        if(type == AttributeType.DATE || type == AttributeType.DATETIME){
+            return "attribute.form.input.text";//@TODO correct input
         }
         if(max != null && max > 150) return "attribute.form.input.textarea";
         if(attributeName.toLowerCase().contains("password")) return "attribute.form.input.password";

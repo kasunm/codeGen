@@ -62,9 +62,32 @@ public class MiscUtils {
 
     public static void createAngularProject(String baseDirectory, String name){
         MiscUtils.executeShellCommand("ng new " + name + " --style=scss --routing=true", baseDirectory);
-        MiscUtils.executeShellCommand("npm install --save jquery" , baseDirectory + File.separator + name);
-        MiscUtils.executeShellCommand("npm install --save  popper.js" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install --save bootstrap" , baseDirectory + File.separator + name);
         MiscUtils.executeShellCommand("npm install --save @ng-bootstrap/ng-bootstrap" , baseDirectory + File.separator + name);
+        //MiscUtils.executeShellCommand("npm install --save jquery" , baseDirectory + File.separator + name);
+        //MiscUtils.executeShellCommand("npm install --save  popper.js" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component accordion" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component alerts" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component buttons" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component carousel" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component collapse" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component datepicker" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component dropdowns" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component modals" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component pagination" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component popover" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component progressbar" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component rating" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component sortable" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component tabs" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component timepicker" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component tooltip" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component typeahead" , baseDirectory + File.separator + name);
+        System.out.println("*** NOTE: Manually add below to angular.json if not present \n\"styles\": [\n" +
+                "  \"src/styles.css\",\n" +
+                "  \"node_modules/bootstrap/dist/css/bootstrap.min.css\"\n" +
+                "], ");
     }
 
     public static void addAngularComponent(String baseDirectory, String name){
