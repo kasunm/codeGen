@@ -17,7 +17,6 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class ErrorDetails {
     private Date timestamp;

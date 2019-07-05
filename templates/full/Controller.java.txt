@@ -1,6 +1,5 @@
 package ${javaPackage}.controller;
 
-import ${javaPackage}.common.CommonUtils;
 import ${javaPackage}.model.dto.${className}DTO;
 import ${javaPackage}.model.entity.${className};
 import ${javaPackage}.model.enums.*;

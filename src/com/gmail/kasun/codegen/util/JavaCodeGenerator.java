@@ -43,7 +43,8 @@ public class JavaCodeGenerator {
         TemplateUtils.getInstance().generateFixedFile(settings, "MainApplication.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot() + File.separator + "error"   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()  + File.separator + "error"   , settings.getProjectSettings());
-        TemplateUtils.getInstance().generateFixedFile(settings, "CommonUtils.java", settings.getJavaPackageRoot()  + File.separator + "common"   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "MainAppTest.java", settings.getJavaTestPackageRoot()    , settings.getProjectSettings());
+        //TemplateUtils.getInstance().generateFixedFile(settings, "CommonUtils.java", settings.getJavaPackageRoot()  + File.separator + "common"   , settings.getProjectSettings());
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
@@ -98,6 +99,11 @@ public class JavaCodeGenerator {
 
             templateText = TemplateUtils.getInstance().readTemplateFile("RepositoryTest.java", false);
             template.generateFile(template.className + "RepositoryTest.java", settings.getJavaTestPackageRoot() + File.separator  + "repo", settings, templateText, classSettings, false, false);
+
+            templateText = TemplateUtils.getInstance().readTemplateFile("APITest.java", false);
+            template.generateFile(template.className + "APITest.java", settings.getJavaTestPackageRoot()  + File.separator  + "api", settings, templateText, classSettings, false, false);
+
+
         }
         TemplateUtils.getInstance().writeToFile(messageResources.toString(), settings.getJavaProjecteRoot() +  File.separator + "src" + File.separator + "main" + File.separator + "resources", "messages.properties", settings);
     }
