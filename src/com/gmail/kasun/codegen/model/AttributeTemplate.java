@@ -2,6 +2,7 @@ package com.gmail.kasun.codegen.model;
 
 import com.gmail.kasun.codegen.util.MiscUtils;
 import com.gmail.kasun.codegen.util.TemplateUtils;
+import com.gmail.kasun.codegen.util.TestDataHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -258,6 +259,38 @@ public class AttributeTemplate {
         if(attributeName.toLowerCase().contains("password")) return "attribute.form.input.password";
 
         return "attribute.form.input.text";
+    }
+
+    public void addConstructorValues(Settings settings, StringBuilder sb, boolean valid){
+        if(collectionType != null && collectionType != CollectionType.None) {
+            sb.append(", null");
+            return;
+        }
+      switch (type) {
+          case INT:  sb.append(", ");sb.append(TestDataHelper.getInstance().getRandomIntegerValue(min, max)); break;
+          case LONG: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomLongValue(min, max)); break;
+          case DOUBLE: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomDoubleValue(min, max)); break;
+          case STRING: sb.append(", "); sb.append("\""); sb.append(getStringAttributeValue(valid)); sb.append("\""); break;
+          case DATE: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDate()); break;
+          case DATETIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDateTime()); break;
+          case TIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalTime()); break;
+          case ENUM: sb.append(", ");  sb.append(settings.getRandomEnumValue(classTypeName)); break;
+          case CLASS: sb.append(", ");  sb.append("null"); break;//@TODO implement in future as enhancement
+
+      }
+    }
+
+    private String getStringAttributeValue(boolean valid){
+        if(!valid){
+            if(min != null && min > 1) return TestDataHelper.getInstance().getDescription(1);
+            else if(max != null && max > 1) return TestDataHelper.getInstance().getDescription(max + 2);
+            else if(required) return null;
+            else if(!StringUtils.isEmpty(validatorRegex)) return "^2_sdf^%&)  (#!#%#@";
+        }
+        if(attributeName.toLowerCase().contains("name")) return TestDataHelper.getInstance().getRandomName(min, max);
+        if(attributeName.toLowerCase().contains("item") || attributeName.toLowerCase().contains("product")) return TestDataHelper.getInstance().getRandomItemName(min, max);
+        if(attributeName.toLowerCase().contains("number")) return TestDataHelper.getInstance().getRandomNumberStringWitLength(min, max);
+        return TestDataHelper.getInstance().getRandomDescription(min, max);
     }
 
 

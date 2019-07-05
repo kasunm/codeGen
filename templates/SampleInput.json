@@ -1,15 +1,15 @@
 {
   "javaProjectName":"Aggala",
   "javaPackage":"com.kasunm.aggala",
-  "javaProjectBasePath":"F:/Develpment/Aggala",
+  "javaProjectBasePath":"F:/Develpment/Aggalat",
   "projectDescription":"A food out let specialized for Aggala",
   "angularProjectName":"AggalaTest",
   "angularProjectBasePath":"F:/Develpment/Aggala",
   "dbName":"users",
   "dbUserName":"appartmentadmin",
   "dbPassword":"Super",
-  "generateNewAngularProject":true,
-  "generateNewJavaProject":false,
+  "generateNewAngularProject":false,
+  "generateNewJavaProject":true,
   "classes":[
     {
       "className":"User",

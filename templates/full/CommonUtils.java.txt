@@ -1,0 +1,43 @@
+package com.kasunm.aggala.common;
+
+import com.kasunm.aggala.error.ErrorDetails;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * <p>Title         : CommonUtils
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Common utility class for ${javaProjectName}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+public class CommonUtils {
+   private static volatile  CommonUtils instance = new CommonUtils();
+
+   private CommonUtils(){}
+
+   public static CommonUtils getInstance(){
+       return instance;
+   }
+
+
+    /**
+     * Get basic Error Message
+     * @param message       String
+     * @param description   String
+     * @param status        HttpStatus
+     * @return ResponseEntity<ErrorDetails>
+     */
+    public ResponseEntity<ErrorDetails> getBasicErrorResponse(String message, String description, HttpStatus status){
+        List<String> errorDescriptions  = new ArrayList<String>();
+        errorDescriptions.add(description);
+        ErrorDetails details = new ErrorDetails(new Date(),status.value(), message, errorDescriptions);
+        return new ResponseEntity(details, status);
+    }
+
+}

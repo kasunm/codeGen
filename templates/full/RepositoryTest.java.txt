@@ -1,0 +1,130 @@
+package ${javaPackage}.test.repo;
+
+import ${javaPackage}.model.entity.*;
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.repo.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * <p>Title         : ${className}Repository unit tests
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Repository unit test class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
+public class ${className}RepositoryTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private ${className}Repository repository;
+
+    private List<${className}> ${classVariableName}s = new ArrayList<>();
+
+    @Before
+    public void setup(){
+        ${classVariableName}s.add(${beanID0});
+		${classVariableName}s.add(${beanID01});
+		${classVariableName}s.add(${beanID02});
+        ${className} ${classVariableName} =  repository.save(${classVariableName}s.get(0));
+        if(${classVariableName} != null) ${classVariableName}s.get(0).setId(${classVariableName}.getId());
+         ${classVariableName} =  repository.save(${classVariableName}s.get(1));
+        if(${classVariableName} != null) ${classVariableName}s.get(1).setId(${classVariableName}.getId());
+    }
+
+    @Test
+    public void verifyGetByID(){
+        Long id = ${classVariableName}s.get(1).getId();
+       Optional<${className}> ${classVariableName} = repository.findById(id);
+       Assert.assertNotNull(${classVariableName});
+       Assert.assertTrue("Expects a valid ${classVariableName}", ${classVariableName}.isPresent());
+       Assert.assertTrue("Expects correct ${classVariableName} ID", ${classVariableName}.get().getId() == id);
+    }
+
+    @Test
+    public void verifyGetByIDNonExisting(){
+        Optional<${className}> ${classVariableName} = repository.findById(999L);
+        Assert.assertNotNull(${classVariableName});
+        Assert.assertTrue("Expects a no ${classDisplayName} to be returned", !${classVariableName}.isPresent());
+    }
+
+    @Test
+    public void verifyGetByIDNull(){
+        Optional<${className}> ${classVariableName} = null;
+        try {
+            ${classVariableName} = repository.findById(null);
+        } catch (InvalidDataAccessApiUsageException e) {
+            Assert.assertTrue("Expects IllegalArgumentException", e != null);
+        }
+
+
+    }
+
+    @Test
+    public void verifyGetAll(){
+        List<${className}> ${classVariableName}s = repository.findAll();
+        Assert.assertNotNull(${classVariableName}s);
+        Assert.assertTrue("Expect saved data to be returned", ${classVariableName}s.size() == 2);
+    }
+
+
+    @Test
+    public void verifySaveAndFlush(){
+        ${className} ${classVariableName} =  repository.saveAndFlush(${classVariableName}s.get(2));
+        Assert.assertNotNull(${classVariableName});
+        Assert.assertTrue("Expects a valid ID for saving", ${classVariableName}.getId() != null && ${classVariableName}.getId() > 0);
+        Optional<${className}> check = repository.findById(${classVariableName}.getId());
+        Assert.assertNotNull(check);
+        Assert.assertTrue("Expects to retrieve by ID after saving", check.isPresent() &&  check.get() != null && check.get().getId() != null && check.get().getId() > 0);
+    }
+
+
+
+    @Test
+    public void verifyDeleteByID(){
+        Long id = ${classVariableName}s.get(1).getId();
+        repository.deleteById(id);
+        Assert.assertTrue("Expects a deletion of ${classVariableName}", true);
+    }
+
+    @Test
+    public void verifyDeleteByIDNonExisting(){
+        try {
+            repository.deleteById(888L);
+        } catch (RuntimeException e) {
+            Assert.assertTrue("Unable to delete not existing item", e != null);
+        }
+    }
+
+    @Test
+    public void verifyDeleteByIDNull(){
+        try {
+            repository.deleteById(null);
+        } catch (InvalidDataAccessApiUsageException e) {
+            Assert.assertTrue("Invalid param zero", e != null);
+        }
+    }
+
+
+}

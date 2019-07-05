@@ -7,9 +7,9 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
- * <p>Title         : ${className} entity
+ * <p>Title         : AppConfig
  * <p>Project       : ${javaProjectName} : ${projectDescription}
- * <p>Description   : ${classDescription}
+ * <p>Description   : Configuration for internationalization anf validator messages
  *
  * @author Kasun Madurasinghe
  * @version 1.0

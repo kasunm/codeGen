@@ -25,28 +25,28 @@ public interface ${className}Service {
      * Get all ${classVariableName}s
      * @return List<${className}>
      */
-    public List<${className}> get${className}s();
+    List<${className}> get${className}s();
 
     /**
      * Get a specific ${classVariableName} by id
      * @param id Long
      * @return Optional<${className}>
      */
-    public Optional<${className}> getByID(Long id);
+    Optional<${className}> getByID(Long id);
 
     /**
      * Save ${classVariableName} and set id to passed ${classVariableName}
      * @param ${classVariableName} ${className}
      * @return ServiceStatus
      */
-    public ServiceStatus save${className}(${className} ${classVariableName});
+    ${className} save${className}(${className} ${classVariableName});
 
     /**
      * Delete a ${classVariableName} by ID
      * @param ${classVariableName}ID long
      * @return ServiceStatus
      */
-    public ServiceStatus deleteByID(long ${classVariableName}ID);
+    ServiceStatus deleteByID(long ${classVariableName}ID);
 
 
 }

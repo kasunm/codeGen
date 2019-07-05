@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.*;
 import java.util.*;
 import org.springframework.transaction.annotation.*;
+import org.springframework.util.Assert;
+
 
 
 /**
@@ -49,14 +51,14 @@ public class Main${className}Service implements ${className}Service{
      * @return ServiceStatus
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, timeout = 500, readOnly = false)
-    public ServiceStatus save${className}(${className} ${classVariableName}){
-        if(${classVariableName} == null || !${classVariableName}.isValid() ) return ServiceStatus.INVALID_PARAMS;
+    public ${className} save${className}(${className} ${classVariableName}){
+        Assert.notNull(${classVariableName}, "${classNameDisplay} parameter expected");
+        Assert.isTrue(${classVariableName}.isValid(), "Valid ${classNameDisplay} is expected");
         ${className} saved${className} = ${classVariableName}Repository.saveAndFlush(${classVariableName});
-        if(saved${className} != null) {
+        if(saved${className} != null && saved${className}.getId() != null && saved${className}.getId() > 0) {
             ${classVariableName}.setId(saved${className}.getId());
-            return ServiceStatus.SUCCESS;
         }
-        return ServiceStatus.DB_ERROR;
+        return ${classVariableName};
     }
 
     /**

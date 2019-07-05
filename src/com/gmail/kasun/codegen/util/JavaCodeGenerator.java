@@ -36,13 +36,6 @@ public class JavaCodeGenerator {
 
 
     private void generateFixedFiles(Settings settings) throws Exception{
-
-
-        Map projectSettings = new HashMap <String, String> ();
-        projectSettings.put("javaPackage", settings.javaPackage );
-        projectSettings.put("javaProjectName", settings.javaProjectName );
-        projectSettings.put("projectDescription", settings.projectDescription );
-
         TemplateUtils.getInstance().generateFixedFile(settings, "application.properties", settings.getJavaProjecteRoot() +  File.separator + "src" + File.separator + "main" + File.separator + "resources"   , settings.getDBSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "pom.xml", settings.getJavaProjecteRoot(), settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "SwaggerConfig.java", settings.getJavaPackageRoot() +  File.separator + GlobalSettings.JavaDirectory.config  , settings.getProjectSettings());
@@ -50,6 +43,7 @@ public class JavaCodeGenerator {
         TemplateUtils.getInstance().generateFixedFile(settings, "MainApplication.java", settings.getJavaPackageRoot()   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "ErrorDetails.java", settings.getJavaPackageRoot() + File.separator + "error"   , settings.getProjectSettings());
         TemplateUtils.getInstance().generateFixedFile(settings, "CustomizedResponseEntityExceptionHandler.java", settings.getJavaPackageRoot()  + File.separator + "error"   , settings.getProjectSettings());
+        TemplateUtils.getInstance().generateFixedFile(settings, "CommonUtils.java", settings.getJavaPackageRoot()  + File.separator + "common"   , settings.getProjectSettings());
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
@@ -86,15 +80,24 @@ public class JavaCodeGenerator {
             template.generateFile(template.className + "DTO.java", settings.getJavaPackageRoot() + File.separator +  "model" + File.separator + "dto", settings, templateText, classSettings, false, true);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("Repository.java", false);
-            template.generateFile(template.className + "Repository.java", settings.getJavaPackageRoot() + File.separator + File.separator + "repo", settings, templateText, classSettings, false, false);
+            template.generateFile(template.className + "Repository.java", settings.getJavaPackageRoot() + File.separator + "repo", settings, templateText, classSettings, false, false);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("MainService.java", false);
-            template.generateFile("Main" + template.className + "Service.java", settings.getJavaPackageRoot() + File.separator +   File.separator + "service", settings, templateText, classSettings, false, false);
+            template.generateFile("Main" + template.className + "Service.java", settings.getJavaPackageRoot() +    File.separator + "service", settings, templateText, classSettings, false, false);
             templateText = TemplateUtils.getInstance().readTemplateFile("Service.java", false);
-            template.generateFile(template.className + "Service.java", settings.getJavaPackageRoot() + File.separator +   File.separator + "service", settings, templateText, classSettings, false, false);
+            template.generateFile(template.className + "Service.java", settings.getJavaPackageRoot() + File.separator +    "service", settings, templateText, classSettings, false, false);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("Controller.java", false);
-            template.generateFile(template.className + "Controller.java", settings.getJavaPackageRoot() + File.separator  + File.separator + "controller", settings, templateText, classSettings, false, false);
+            template.generateFile(template.className + "Controller.java", settings.getJavaPackageRoot() + File.separator  + "controller", settings, templateText, classSettings, false, false);
+
+            templateText = TemplateUtils.getInstance().readTemplateFile("ControllerTest.java", false);
+            template.generateFile(template.className + "ControllerTest.java", settings.getJavaTestPackageRoot() + File.separator  + "controller", settings, templateText, classSettings, false, false);
+
+            templateText = TemplateUtils.getInstance().readTemplateFile("ServiceTest.java", false);
+            template.generateFile(template.className + "ServiceTest.java", settings.getJavaTestPackageRoot() + File.separator  + "service", settings, templateText, classSettings, false, false);
+
+            templateText = TemplateUtils.getInstance().readTemplateFile("RepositoryTest.java", false);
+            template.generateFile(template.className + "RepositoryTest.java", settings.getJavaTestPackageRoot() + File.separator  + "repo", settings, templateText, classSettings, false, false);
         }
         TemplateUtils.getInstance().writeToFile(messageResources.toString(), settings.getJavaProjecteRoot() +  File.separator + "src" + File.separator + "main" + File.separator + "resources", "messages.properties", settings);
     }

@@ -17,4 +17,9 @@ public class EnumTemplate {
         this.enumName = enumName;
         this.enumValues = values;
     }
+
+    public String getRandomValue(){
+        String [] values = this.enumValues.split(",");
+        return enumName + "." + values[(int) (Math.random() * (values.length -1))];
+    }
 }

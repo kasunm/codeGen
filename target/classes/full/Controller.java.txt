@@ -1,14 +1,16 @@
 package ${javaPackage}.controller;
 
-
+import ${javaPackage}.common.CommonUtils;
 import ${javaPackage}.model.dto.${className}DTO;
 import ${javaPackage}.model.entity.${className};
 import ${javaPackage}.model.enums.*;
 import ${javaPackage}.service.${className}Service;
+import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 /**
  * <p>Title         : ${className}Controller
  * <p>Project       : ${javaProjectName} : ${projectDescription}
@@ -35,12 +39,13 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RequestMapping("/${classURL}")
 public class ${className}Controller {
-    @Autowired
-    private ${className}Service ${classVariableName}Service;
-    private ModelMapper modelMapper = new ModelMapper();
-    private Logger logger = LoggerFactory.getLogger(${className}Controller.class);
 
-    public ${className}Controller(){
+    private final ${className}Service ${classVariableName}Service;
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final Logger logger = LoggerFactory.getLogger(${className}Controller.class);
+
+    public ${className}Controller(${className}Service ${classVariableName}Service){
+        this.${classVariableName}Service = ${classVariableName}Service;
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
     }
 
@@ -51,11 +56,11 @@ public class ${className}Controller {
      * @return ResponseEntity<List<${className}DTO>>
      */
     @GetMapping(path = "")
-    public ResponseEntity<List<${className}DTO>> get${className}s(){
-        logger.debug("Request to get all ${classNameDisplay}");
-        List<${className}DTO> ${classVariableName}s = ${classVariableName}Service.get${className}s().stream().map( ${classVariableName} -> convertToDTO(${classVariableName})).collect(Collectors.toList());
-        if(${classVariableName}s == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
-         else return new ResponseEntity(${classVariableName}s, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> get${className}s(){
+        logger.debug("Request to get all ${classNameDisplay}s");
+        List<${className}DTO> ${classVariableName}s = ${classVariableName}Service.get${className}s().stream().map(this::convertToDTO).collect(Collectors.toList());
+        if(${classVariableName}s == null || ${classVariableName}s.size() < 1) throw new ResourceNotFoundException("Unable to find any ${classNameDisplay}s");
+        return new ResponseEntity(${classVariableName}s, HttpStatus.ACCEPTED);
     }
 
     /**
@@ -65,11 +70,11 @@ public class ${className}Controller {
      */
     @GetMapping(path = "{id}")
     public ResponseEntity<${className}DTO> get${className}s(@PathVariable Long id) {
-        logger.debug("Request to get a ${classNameDisplay} by id");
-         if(id == null || id <= 0) return new ResponseEntity(HttpStatus.PRECONDITION_FAILED);
+        logger.debug("Request to get a ${className} by id");
+        if(id == null || id <= 0) throw new IllegalArgumentException("Expects a valid id value > 0");
         Optional<${className}> ${classVariableName} = ${classVariableName}Service.getByID(id);
         if(${classVariableName} != null && ${classVariableName}.isPresent()) return new ResponseEntity(convertToDTO(${classVariableName}.get()) , HttpStatus.ACCEPTED);
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        throw new ResourceNotFoundException("Unable to find any ${classNameDisplay} with id " + id);
     }
 
 
@@ -81,27 +86,27 @@ public class ${className}Controller {
      * @throws Exception
      */
     @PostMapping(path = "")
-    public ResponseEntity<Long> save${className}(@RequestBody @Valid ${className}DTO ${classVariableName}) throws Exception{
+    public ResponseEntity<${className}DTO> save${className}(@RequestBody @Valid ${className}DTO ${classVariableName}) throws Exception{
         logger.debug("Request to save ${classNameDisplay}");
-        ${className} save${className} = new ${className}();
+        ${className} existing${className} = new ${className}();
         if(${classVariableName}.getId() != null && ${classVariableName}.getId() > 0) {
-            //In case not all persistent attributes not present in update DTO
+            //Updating existing ${classVariableName} - Check item with matching ID present
             Optional<${className}> saved${className} = ${classVariableName}Service.getByID(${classVariableName}.getId());
-            if(saved${className}.isPresent()) save${className} = saved${className}.get();
-            else{
-                logger.error("${classNameDisplay} with id " + ${classVariableName}.getId() + " is not present, yet ${classVariableName} is trying to update");
-                return new ResponseEntity(HttpStatus.NOT_FOUND);
-            }
+            if(saved${className} != null && saved${className}.isPresent()) existing${className} = saved${className}.get();
+            else throw new ResourceNotFoundException("In order to update ${classNameDisplay} " + ${classVariableName}.getId() + ", existing ${classNameDisplay} must be available with same ID");
         }
-        ServiceStatus serviceStatus = ${classVariableName}Service.save${className}(convertTo${className}(${classVariableName}));
-         if(serviceStatus == ServiceStatus.SUCCESS){
-            return  ResponseEntity.created (new URI("/${classURL}/" + save${className}.getId())).body(save${className}.getId());
-        }else if(serviceStatus == ServiceStatus.INVALID_PARAMS){
-            logger.error("Unable to save ${classVariableName} with id " + save${className}.getId() + " as parameters invalid");
-            return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
+
+        //In case not all persistent attributes not present in update DTO
+        ${className} save${className} = copyTo${className}(${classVariableName}, existing${className});
+        ${className} saved${className} = ${classVariableName}Service.save${className}(save${className});
+        if(saved${className}.getId() != null && saved${className}.getId() > 0){
+            logger.info("Saved ${classNameDisplay} with id " + save${className}.getId());
+            ${className}DTO saved${className}DTo = convertToDTO(saved${className});
+            return  ResponseEntity.created (new URI("/${classURL}/" + saved${className}.getId())).body(saved${className}DTo);
         }
-        logger.error("Unable to save ${classVariableName} with id " + save${className}.getId());
-        return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
+        else{
+            throw new PersistenceException("${className} not persisted: " + new Gson().toJson(saved${className}));
+        }
     }
 
    /**
@@ -111,27 +116,17 @@ public class ${className}Controller {
      */
     @DeleteMapping("{id}")
     public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
-        logger.debug("Request to save ${classNameDisplay} with id " + id);
-        if(id == null || id == 0)  return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
-        ServiceStatus serviceStatus = ${classVariableName}Service.deleteByID(id);
-        if(serviceStatus == ServiceStatus.SUCCESS) {
-            return new ResponseEntity<Long>(id,new HttpHeaders(), HttpStatus.ACCEPTED);
-        }else if(serviceStatus == ServiceStatus.INVALID_PARAMS){
-            logger.error("Unable to delete ${className} with id " + id + " as parameters invalid");
-            return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
-        }
-        logger.error("Unable to save ${className} with id " + id );
-        return new ResponseEntity(-1, HttpStatus.EXPECTATION_FAILED);
-
+        logger.debug("Request to delete ${className} with id " + id);
+        if(id == null || id == 0)  throw new IllegalArgumentException("Expects a valid id value > 0");
+        Optional<${className}> ${classVariableName} = ${classVariableName}Service.getByID(id);
+        if(${classVariableName} == null || !${classVariableName}.isPresent()) throw new ResourceNotFoundException("In order to delete  ${classNameDisplay} " + id + ", existing  ${classNameDisplay} must be available with same ID");
+        ${classVariableName}Service.deleteByID(id);
+        return new ResponseEntity<Long>(id,new HttpHeaders(), HttpStatus.ACCEPTED);
     }
     /** ------------- Private supportive method ------------- */
 
     private ${className}DTO convertToDTO(${className} ${classVariableName}){
         return modelMapper.map(${classVariableName}, ${className}DTO.class);
-    }
-
-    private ${className} convertTo${className}(${className}DTO ${classVariableName}DTO){
-        return modelMapper.map(${classVariableName}DTO, ${className}.class);
     }
 
     private ${className} copyTo${className}(${className}DTO ${classVariableName}DTO, ${className} ${classVariableName}){

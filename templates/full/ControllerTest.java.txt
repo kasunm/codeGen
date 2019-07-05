@@ -1,0 +1,266 @@
+package ${javaPackage}.test.controller;
+
+import ${javaPackage}.MainApplication;
+import ${javaPackage}.controller.${className}Controller;
+import ${javaPackage}.error.CustomizedResponseEntityExceptionHandler;
+import ${javaPackage}.model.dto.${className}DTO;
+import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.repo.${className}Repository;
+import ${javaPackage}.service.${className}Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.result.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * <p>Title         : ${className}Controller unit tests
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Controller unit test class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MainApplication.class, CustomizedResponseEntityExceptionHandler.class, ${className}Controller.class})
+@Import(CustomizedResponseEntityExceptionHandler.class)
+@SpringBootTest()
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@AutoConfigureMockMvc
+public class ${className}ControllerTest {
+    private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext wac;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    @Autowired
+    private CustomizedResponseEntityExceptionHandler exceptionHandler;
+
+    @MockBean
+    private ${className}Service ${classVariableName}Service;
+
+    private final ModelMapper modelMapper = new ModelMapper();
+
+    private List<${className}> ${classVariableName}s = new ArrayList<>();
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        //mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(exceptionHandler) .build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        ${classVariableName}s.add(${beanID1}); //ID 1
+        ${classVariableName}s.add(${beanID2}); //ID 2
+		${classVariableName}s.add(${beanID0});//New item
+        given(${classVariableName}Service.getByID(1L)).willReturn(Optional.of(${classVariableName}s.get(0)));
+        given(${classVariableName}Service.getByID(2L)).willReturn(Optional.of(${classVariableName}s.get(1)));
+        given(${classVariableName}Service.get${className}s()).willReturn(${classVariableName}s);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+    }
+
+    @Test
+    public void verifyGetAll() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/${classURL}").accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(3)));
+    }
+
+    @Test
+    public void verifyGetByIDMatch() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/${classURL}/{id}", 1L).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted()).andDo(print())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    public void verifyGetByIDNotFound() throws Exception{
+        given(${classVariableName}Service.getByID(100L)).willReturn(Optional.empty());
+        mockMvc.perform(MockMvcRequestBuilders.get("/${classURL}/{id}", 100L).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void verifyGetByIDArgumentError() throws Exception{
+        given(${classVariableName}Service.getByID(100L)).willReturn(Optional.empty());
+        mockMvc.perform(MockMvcRequestBuilders.get("/${classURL}/{id}", "NotID").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void verifySave${className}Success() throws Exception{
+        ${className} saved${className} = new ${className}();
+        BeanUtils.copyProperties(${classVariableName}s.get(2), saved${className});
+        saved${className}.setId(5L);
+        given(${classVariableName}Service.save${className}(${classVariableName}s.get(2))).willReturn(saved${className});
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(${classVariableName}s.get(2))))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().stringValues("location", "/${classURL}/5"));
+    }
+
+    @Test
+    public void verifySave${className}ExistingSuccess() throws Exception{
+        given(${classVariableName}Service.save${className}(${classVariableName}s.get(1))).willReturn(${classVariableName}s.get(1));
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(${classVariableName}s.get(1))))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().stringValues("location", "/${classURL}/2"));
+    }
+
+
+    @Test
+    public void verifySave${className}FailValidation() throws Exception{
+        ${className} invalid =  ${beanFailValidation};
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(invalid)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void verifySave${className}ExistingNotFound() throws Exception{
+        ${className} nonExisting =  ${beanID5};
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(nonExisting)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void verifySave${className}PersistenceIDNotSet() throws Exception{
+        ${className} idNotSet =  ${beanID0};;
+        given(${classVariableName}Service.save${className}(idNotSet)).willReturn(idNotSet);
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(idNotSet)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+    }
+
+
+
+    @Test
+    public void verifySave${className}DataException() throws Exception{
+        ${className} except${className} = new ${className}();
+        BeanUtils.copyProperties(${classVariableName}s.get(2), except${className});
+
+        given(${classVariableName}Service.save${className}(except${className})).willThrow(new DataAccessException("Unable to save") {
+        });
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(except${className})))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void verifySave${className}ArgumentException() throws Exception{
+        ${className} except${className} = new ${className}();
+        BeanUtils.copyProperties(${classVariableName}s.get(2), except${className});
+
+        given(${classVariableName}Service.save${className}(except${className})).willThrow(new IllegalArgumentException("Invalid argument") {
+        });
+        mockMvc.perform(MockMvcRequestBuilders.post("/${classURL}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(getDTO(except${className})))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void verifyDeleteByIDSuccess() throws Exception{
+        given(${classVariableName}Service.deleteByID(1L)).willReturn(ServiceStatus.SUCCESS);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${classURL}/{id}", 1L).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted()).andDo(print());
+    }
+
+
+    @Test
+    public void verifyDeleteByIDNonExisting() throws Exception{
+        given(${classVariableName}Service.getByID(22L)).willReturn(Optional.empty());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${classURL}/{id}", 111L).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()) ;
+    }
+
+
+    @Test
+    public void verifyDeleteByIDZero() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${classURL}/{id}", 0L).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()) ;
+    }
+
+    @Test
+    public void verifyDeleteByIDDBError() throws Exception{
+        given(${classVariableName}Service.deleteByID(111L)).willThrow( new EmptyResultDataAccessException("Cannot access record 111", 1));
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/${classURL}/{id}", 111L).accept(MediaType.APPLICATION_JSON));
+
+        } catch (Throwable e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+
+    private ${className}DTO getDTO(${className} ${classVariableName}){
+        return modelMapper.map(${classVariableName}, ${className}DTO.class);
+    }
+
+    public  String asJsonString(final Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

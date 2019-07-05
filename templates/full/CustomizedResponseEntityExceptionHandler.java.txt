@@ -1,7 +1,10 @@
 package ${javaPackage}.error;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,20 +12,23 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+
 /**
- * <p>Title         : ${FILE_NAME}
- * <p>Project       : Aggala
- * <p>Description   :
+ * <p>Title         : CustomizedResponseEntityExceptionHandler
+ * <p>Project       : ${javaProjectName}
+ * <p>Description   : ${javaProjectName} : ${projectDescription}
  *
  * @author Kasun Madurasinghe
  * @version 1.0
@@ -30,48 +36,114 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-    private Logger logger = LoggerFactory.getLogger("CustomizedResponseEntityExceptionHandler");
 
-    /**
-     * Handle all bean validation error
-     * @param ex
-     * @param headers
-     * @param status
-     * @param request
-     * @return
-     */
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName()
-               , new ArrayList<String>());
-        logger.error("Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName());
-        //Get all errors
-        errorDetails.setDetails( ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(filedError -> filedError.getDefaultMessage())
-                .collect(Collectors.toList()));
-        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
-    }
+      private Logger logger = LoggerFactory.getLogger("CustomizedResponseEntityExceptionHandler");
+
+        /****************************** Overridden methods ******************************/
+
+        /**
+         * Handle all bean validation error
+         * @param ex
+         * @param headers
+         * @param status
+         * @param request
+         * @return ResponseEntity<Object>
+         */
+        @Override
+        protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName()
+                    , new ArrayList<String>());
+            logger.error("Validation Failed for " + ex.getBindingResult().getTarget().getClass().getSimpleName());
+            //Get all errors
+            errorDetails.setDetails( ex.getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(filedError -> filedError.getDefaultMessage())
+                    .collect(Collectors.toList()));
+            return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+        }
+
+        /**
+         * Handle internal server errors cleanly
+         * @param ex
+         * @param body
+         * @param headers
+         * @param status
+         * @param request
+         * @return ResponseEntity<Object>
+         */
+        @Override
+        protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+            super.handleExceptionInternal(ex, body, headers, status, request);
+
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Error occurred" +  ex.getMessage()
+                    , new ArrayList<String>());
+            errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
+                    error -> error.getClassName() + " - " + error.getMethodName()
+            ).collect(Collectors.toList()));
+
+            logger.error("ERROR: Internal error occurred" +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
+            return new ResponseEntity(errorDetails, status);
+        }
 
 
-    /**
-     * Handle internal server errors cleanly
-     * @param ex
-     * @param body
-     * @param headers
-     * @param status
-     * @param request
-     * @return ResponseEntity<Object>
-     */
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), "Internal error occurred" +  ex.getMessage()
-                , new ArrayList<String>());
-        errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
-                error -> error.getClassName() + " - " + error.getMethodName()
-        ).collect(Collectors.toList()));
-        logger.error("ERROR: Internal error occurred" +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
-        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
-    }
+        /****************************** Global separate exception handlers ******************************/
+
+
+        /**
+         * Handle data access runtime errors
+         * @param ex
+         * @param request
+         * @return ResponseEntity<Object>
+         */
+        @ExceptionHandler(value = { DataAccessException.class, PersistenceException.class})
+        public ResponseEntity<Object> handleDataAccess(
+                RuntimeException ex, WebRequest request) {
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unable to access data: " +  ex.getMessage()
+                    , new ArrayList<String>());
+            errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
+                    error -> error.getClassName() + " - " + error.getMethodName()
+            ).collect(Collectors.toList()));
+            logger.error("ERROR: Error occurred while accessing data: " +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
+            return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        /* Handle data access runtime errors
+       * @param ex
+       * @param request
+       * @return ResponseEntity<Object>
+       */
+        @ExceptionHandler(value = { ResourceNotFoundException.class})
+        public ResponseEntity<Object> handleResourceNotFound(
+                RuntimeException ex, WebRequest request) {
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.NOT_FOUND.value(), "Unable to find and valid resource : " +  ex.getMessage()
+                    , new ArrayList<String>());
+            errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
+                    error -> error.getClassName() + " - " + error.getMethodName()
+            ).collect(Collectors.toList()));
+            logger.info("Unable to find any valid resource: " +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
+            return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
+        }
+
+
+
+
+        /**
+         * Handle data access runtime errors
+         * @param ex
+         * @param request
+         * @return ResponseEntity<Object>
+         */
+        @ExceptionHandler(value = { IllegalArgumentException.class})
+        public ResponseEntity<Object> handleInvalidArgument(
+                RuntimeException ex, WebRequest request) {
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST.value(), "Expects a valid argument: " +  ex.getMessage()
+                    , new ArrayList<String>());
+            errorDetails.setDetails(Arrays.stream(ex.getStackTrace()).map(
+                    error -> error.getClassName() + " - " + error.getMethodName()
+            ).collect(Collectors.toList()));
+            logger.error("ERROR: Expects a valid argument : " +  ex.getMessage() + " - " + errorDetails.getDetails().stream());
+            return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+        }
+
 }

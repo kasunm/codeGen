@@ -63,6 +63,7 @@ public class Settings {
         Map projectSettings = new HashMap<String, String>();
         projectSettings.put("javaPackage", this.javaPackage);
         projectSettings.put("javaProjectName", this.javaProjectName);
+        projectSettings.put("projectDescription", this.projectDescription);
         return projectSettings;
     }
 
@@ -105,6 +106,10 @@ public class Settings {
         return javaProjectBasePath + File.separator + javaProjectName + File.separator +  "src" + File.separator + "main" +  File.separator + "java" +  File.separator + javaPackage.replaceAll("\\.", "/");
     }
 
+    public String getJavaTestPackageRoot() {
+        return javaProjectBasePath + File.separator + javaProjectName + File.separator +  "src" + File.separator + "test" +  File.separator + javaPackage.replaceAll("\\.", "/") + File.separator +  "test";
+    }
+
     public String getJavaProjecteRoot() {
         return javaProjectBasePath + File.separator+ javaProjectName  ;
     }
@@ -135,6 +140,13 @@ public class Settings {
             sb.append(classTemplate.className + "ListComponent");
         }
         return sb.toString();
+    }
+
+    public String getRandomEnumValue(String enumName){
+        for(EnumTemplate enumTemplate: enums){
+            if(enumName.equalsIgnoreCase(enumTemplate.enumName)) return enumTemplate.getRandomValue();
+        }
+        return null;
     }
 
 

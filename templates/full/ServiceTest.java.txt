@@ -1,0 +1,184 @@
+package com.kasunm.aggala.test.service;
+
+import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.enums.*;
+import ${javaPackage}.repo.${className}Repository;
+import ${javaPackage}.service.Main${className}Service;
+import ${javaPackage}.service.${className}Service;
+import org.hibernate.HibernateException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.PersistenceException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+
+/**
+ * <p>Title         : ${className}Service unit tests
+ * <p>Project       : ${javaProjectName} : ${projectDescription}
+ * <p>Description   : Service unit test class for ${className}. ${classDescription}
+ *
+ * @author Kasun Madurasinghe
+ * @version 1.0
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+public class ${className}ServiceTest {
+
+    @MockBean
+    private ${className}Repository repository;
+
+
+    @Autowired
+    private ${className}Service ${classVariableName}Service;
+
+    private List<${className}> ${classVariableName}s = new ArrayList<>();
+
+    @TestConfiguration
+    static class ${className}ServiceImplTestContextConfiguration {
+        @Bean
+        public ${className}Service employeeService() {
+            return new Main${className}Service();
+        }
+    }
+
+    @Before
+    public void setUp(){
+		${classVariableName}s.add(${beanID1}); //ID 1
+        ${classVariableName}s.add(${beanID2}); //ID 2
+		${classVariableName}s.add(${beanID3}); //ID 3
+
+        given(repository.findAll()).willReturn(${classVariableName}s);
+        given(repository.findById(1L)).willReturn(Optional.of(${classVariableName}s.get(0)));
+        given(repository.findById(null)).willThrow(new IllegalArgumentException("Expects valid ID"));
+        given(repository.findById(111L)).willReturn(Optional.empty());
+
+
+    }
+
+    @Test
+    public void verifyGet${className}sSuccess(){
+        List<${className}> ${classVariableName}s = ${classVariableName}Service.get${className}s();
+        Assert.assertNotNull(${classVariableName}s);
+        Assert.assertTrue("Expect 3 ${classVariableName}s in result", ${classVariableName}s.size() == 3);
+        Assert.assertTrue("Expect same test data reference to be returned", ${classVariableName}s == this.${classVariableName}s);
+    }
+
+
+
+    @Test
+    public void verifyGetByIDNotFound(){
+        Optional<${className}> ${classVariableName} = null;
+        ${classVariableName} = ${classVariableName}Service.getByID(111L);
+        Assert.assertTrue("No match found", !${classVariableName}.isPresent());
+    }
+
+    @Test
+    public void verifyGetByIDNull(){
+        Optional<${className}> ${classVariableName} = null;
+        try {
+            ${classVariableName} = ${classVariableName}Service.getByID(null);
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("For ID Zero throws IllegalArgumentException", ${classVariableName} == null);
+        }
+    }
+
+    @Test
+    public void verifyGetByIDSuccess(){
+        Optional<${className}> ${classVariableName} = ${classVariableName}Service.getByID(1L);
+        Assert.assertNotNull(${classVariableName}s);
+        Assert.assertTrue("Expect a ${classVariableName}s in result", ${classVariableName}.isPresent());
+        Assert.assertTrue("Expect same test data reference to be returned", ${classVariableName}s.get(0) == ${classVariableName}.get());
+    }
+
+    @Test
+    public void verifySave${className}Success() throws Exception{
+        ${className} new${className} =  ${beanID1};
+        ${className} saved${className}4 = new ${className}();
+        BeanUtils.copyProperties(new${className}, saved${className}4);
+        saved${className}4.setId(5L);
+        given(repository.save(new${className})).willReturn(saved${className}4);
+        given(repository.saveAndFlush(new${className})).willReturn(saved${className}4);
+
+        ${className} ${classVariableName} = ${classVariableName}Service.save${className}(new${className});
+        Assert.assertNotNull(${classVariableName});
+        Assert.assertTrue("Expect valid ID in returned ${classVariableName}", ${classVariableName}.getId() != null && ${classVariableName}.getId() > 0);
+    }
+
+    @Test
+    public void verifySave${className}Null() throws Exception{
+        ${className} ${classVariableName} = null;
+        try {
+            ${classVariableName} = ${classVariableName}Service.save${className}(null);
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Expect valid ID in returned ${classVariableName}", !StringUtils.isEmpty(e.getMessage()) && ${classVariableName} == null && e.getMessage().contains("parameter expected"));
+        }
+    }
+
+    @Test
+    public void verifySave${className}RepoIDNotReturned() throws Exception{
+        ${className} new${className} = ${beanID0};
+        given(repository.save(new${className})).willReturn(new${className});
+        given(repository.saveAndFlush(new${className})).willReturn(new${className});
+
+        ${className} ${classVariableName} = ${classVariableName}Service.save${className}(new${className});
+        Assert.assertNotNull(${classVariableName});
+        Assert.assertTrue("Valid ID not returned ${classDisplayName}", ${classVariableName}.getId() == null || ${classVariableName}.getId() == 0);
+    }
+
+    @Test
+    public void verifySave${className}RepoException() throws Exception{
+        ${className} new${className} = ${beanID0};
+        given(repository.save(new${className})).willThrow(new PersistenceException("error saving ${classDisplayName}"));
+        given(repository.saveAndFlush(new${className})).willThrow(new PersistenceException("error saving ${classDisplayName}"));
+
+        ${className} ${classVariableName} = null;
+        try {
+            ${classVariableName} = ${classVariableName}Service.save${className}(new${className});
+        } catch (RuntimeException e) {
+            Assert.assertTrue("DB Exception", e != null && ${classVariableName} == null);
+        }
+
+    }
+
+    @Test
+    public void verifyDelete${className}Success() throws Exception{
+        ServiceStatus status = ${classVariableName}Service.deleteByID(2L);
+        Assert.assertNotNull(status);
+        Assert.assertTrue("Expect delete ${classVariableName} operation successful", status == ServiceStatus.SUCCESS);
+    }
+
+    @Test
+    public void verifyDelete${className}IDException() throws Exception{
+        doThrow(EmptyResultDataAccessException.class)
+                .when(repository)
+                .deleteById(1L);
+        ServiceStatus status = null;
+        try {
+            status = ${classVariableName}Service.deleteByID(1L);
+        } catch (RuntimeException e) {
+            Assert.assertTrue("Expect entity not found for deletion", status == null);
+        }
+    }
+
+
+
+}

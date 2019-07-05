@@ -67,13 +67,24 @@ public class ClassTemplate {
     }
 
     public boolean generateFile(String fileName, String path,Settings settings, String templateText, Map<String, String> variables, boolean isEntity, boolean addVariables) throws Exception{
-        if(addVariables) addClassTemplateVariables(variables, isEntity);
+        if(addVariables) addClassTemplateVariables(settings, variables, isEntity);
         return TemplateUtils.getInstance().replaceVariablesAndWrite(templateText, variables, path, fileName, settings);
     }
 
-    public void addClassTemplateVariables(Map<String,String> variables, boolean isEntity) throws Exception{
+    public void addClassTemplateVariables(Settings settings, Map<String,String> variables, boolean isEntity) throws Exception{
         MiscUtils.addClassStringAttributes(this, variables);
         variables.put("classAttributes", getAttributeNames(isEntity));
+        //  Add test data
+        variables.put("beanID0", getBeanInstance(settings, "0L", true));
+        variables.put("beanID01", getBeanInstance(settings, "0L", true));
+        variables.put("beanID02", getBeanInstance(settings, "0L", true));
+        variables.put("beanID03", getBeanInstance(settings, "0L", true));
+        variables.put("beanID1", getBeanInstance(settings, "1L", true));
+        variables.put("beanID2", getBeanInstance(settings, "2L", true));
+        variables.put("beanID3", getBeanInstance(settings, "3L", true));
+        variables.put("beanID4", getBeanInstance(settings, "4L", false));
+        variables.put("beanID5", getBeanInstance(settings, "5L", true));
+        variables.put("beanFailValidation", getBeanInstance(settings, "6L", false));
     }
 
     public String getClassVariableName(){
@@ -198,6 +209,22 @@ public class ClassTemplate {
                 sb.append(TemplateUtils.getInstance().replaceVariables(templateText, tags));
             }
         }
+        return sb.toString();
+    }
+
+    /**
+     * Get bean instance creation code with all arguments
+     * with provided id
+     * @param id Long
+     * @return String
+     */
+    public String getBeanInstance(Settings settings, String id, boolean valid){
+        StringBuilder sb = new StringBuilder(200);
+        sb.append(" new "  + className + "(" + id  );
+        for(AttributeTemplate attribute: attributes){
+            attribute.addConstructorValues(settings, sb, valid);
+        }
+        sb.append(")");
         return sb.toString();
     }
 
