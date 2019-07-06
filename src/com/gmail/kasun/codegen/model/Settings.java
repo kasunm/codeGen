@@ -149,5 +149,19 @@ public class Settings {
         return null;
     }
 
+    public String getMappedAttributeNames( String className, String callingClassName, String mainAttributeName, String expectedAttributeNames) throws Exception{
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate.getMappedAttributeNames( mainAttributeName, callingClassName, expectedAttributeNames);
+        }
+        return " ";
+    }
+
+    public String getBeanInstance(String className,  String id, boolean valid){
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate.getBeanInstance( this,  id, valid);
+        }
+        return " ";
+    }
+
 
 }

@@ -1,8 +1,8 @@
 package com.kasunm.aggala.test.service;
 
-import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.entity.*;
 import ${javaPackage}.model.enums.*;
-import ${javaPackage}.repo.${className}Repository;
+import ${javaPackage}.repo.*;
 import ${javaPackage}.service.Main${className}Service;
 import ${javaPackage}.service.${className}Service;
 import org.hibernate.HibernateException;
@@ -52,6 +52,8 @@ public class ${className}ServiceTest {
 
     private List<${className}> ${classVariableName}s = new ArrayList<>();
 
+    ${dependantBeansHeader}
+
     @TestConfiguration
     static class ${className}ServiceImplTestContextConfiguration {
         @Bean
@@ -62,6 +64,8 @@ public class ${className}ServiceTest {
 
     @Before
     public void setUp(){
+        ${dependantBeans}
+
 		${classVariableName}s.add(${beanID1}); //ID 1
         ${classVariableName}s.add(${beanID2}); //ID 2
 		${classVariableName}s.add(${beanID3}); //ID 3

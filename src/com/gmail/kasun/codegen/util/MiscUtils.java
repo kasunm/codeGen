@@ -2,6 +2,7 @@ package com.gmail.kasun.codegen.util;
 
 
 
+import com.gmail.kasun.codegen.model.Settings;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -122,7 +123,7 @@ public class MiscUtils {
      * Based on reflection add all string attributes to map with it's value.put("attribute", attribute)
      * @param tokens
      */
-    public static void addClassStringAttributes(Object object, Map<String,String> tokens){
+    public static void addClassStringAttributes( Object object, Map<String,String> tokens){
         Class  classType = object.getClass();
         Field[] fields = classType.getDeclaredFields();
         for(int i = 0; i < fields.length; i++){

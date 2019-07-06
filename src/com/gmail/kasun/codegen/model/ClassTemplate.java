@@ -56,12 +56,27 @@ public class ClassTemplate {
         this.classVariableName = StringUtils.uncapitalize(className);
     }
 
-    public String getAttributeNames(boolean isEntityClass) throws Exception{
+    public String getAttributeNames(Settings settings, boolean isEntityClass) throws Exception{
         StringBuilder attributeText = new StringBuilder(1000);
         if(attributes == null) return "";
         for(AttributeTemplate template: attributes){
-            attributeText.append(template.getJavaAttribute(isEntityClass, className));
+            attributeText.append(template.getJavaAttribute(settings, isEntityClass, className, ""));
             attributeText.append("\n");
+        }
+        return attributeText.toString();
+    }
+
+    public String getMappedAttributeNames( String mainAttributeName, String callingClassName, String expectedAttributeNames) throws Exception{
+        StringBuilder attributeText = new StringBuilder(1000);
+        if(attributes == null) return "";
+        if(expectedAttributeNames.contains("id")){
+            attributeText.append("\t@NotNull\n   private Long " + mainAttributeName + "Id;\n");
+        }
+        for(AttributeTemplate template: attributes){
+            if(expectedAttributeNames.contains(","+ template.attributeName + ",")) {
+                attributeText.append(template.getJavaAttribute(null, false, this.className, mainAttributeName));
+                attributeText.append("\n");
+            }
         }
         return attributeText.toString();
     }
@@ -73,7 +88,7 @@ public class ClassTemplate {
 
     public void addClassTemplateVariables(Settings settings, Map<String,String> variables, boolean isEntity) throws Exception{
         MiscUtils.addClassStringAttributes(this, variables);
-        variables.put("classAttributes", getAttributeNames(isEntity));
+        variables.put("classAttributes", getAttributeNames(settings, isEntity));
         //  Add test data
         variables.put("beanID0", getBeanInstance(settings, "0L", true));
         variables.put("beanID01", getBeanInstance(settings, "0L", true));
@@ -85,6 +100,36 @@ public class ClassTemplate {
         variables.put("beanID4", getBeanInstance(settings, "4L", false));
         variables.put("beanID5", getBeanInstance(settings, "5L", true));
         variables.put("beanFailValidation", getBeanInstance(settings, "6L", false));
+
+        //Add dependant class instance
+        StringBuilder dependantBeans = new StringBuilder(2000);
+        StringBuilder dependantBeanHeader = new StringBuilder(2000);
+        dependantBeanHeader.append(" ");
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(attributeTemplate.type == AttributeType.CLASS && (attributeTemplate.collectionType == null || attributeTemplate.collectionType == CollectionType.None)){
+                if(isEntity) {
+                    dependantBeanHeader.append("\t@Autowired\n\t");
+                    dependantBeanHeader.append(attributeTemplate.classTypeName + "Repository " + StringUtils.uncapitalize(attributeTemplate.classTypeName) + "Repository; ");
+                }
+                addDependatBeanInstance(settings, dependantBeans, dependantBeanHeader, attributeTemplate, 0, true, isEntity);
+                addDependatBeanInstance(settings, dependantBeans, dependantBeanHeader, attributeTemplate, 1, true, isEntity);
+                addDependatBeanInstance(settings, dependantBeans, dependantBeanHeader, attributeTemplate, 2, false, isEntity);
+            }
+        }
+        dependantBeans.append(" ");
+        variables.put("dependantBeans", dependantBeans.toString());
+        variables.put("dependantBeansHeader", dependantBeanHeader.toString());
+    }
+
+    private void addDependatBeanInstance(Settings settings, StringBuilder dependantBeans, StringBuilder dependantBeanHeader, AttributeTemplate attributeTemplate, int id, boolean valid, boolean isEntity) {
+        dependantBeanHeader.append("\tprivate " + attributeTemplate.classTypeName + " " + attributeTemplate.attributeName + id + ";\n\t");
+        dependantBeans.append( attributeTemplate.attributeName + id + " =  " );
+        dependantBeans.append(settings.getBeanInstance(attributeTemplate.classTypeName, (isEntity && valid ? "0" : id ) + "L", valid));
+        dependantBeans.append(";\n\t");
+        if(valid && id > 0 && isEntity){
+            dependantBeans.append(attributeTemplate.classTypeName + " saved" + attributeTemplate.attributeName + id + " = " +  StringUtils.uncapitalize(attributeTemplate.classTypeName) + "Repository.save(" +  attributeTemplate.attributeName + id + ");\n\t");
+            dependantBeans.append(attributeTemplate.attributeName + id + " = saved" + attributeTemplate.attributeName + id  + ";\n");
+        }
     }
 
     public String getClassVariableName(){
@@ -222,7 +267,7 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(200);
         sb.append(" new "  + className + "(" + id  );
         for(AttributeTemplate attribute: attributes){
-            attribute.addConstructorValues(settings, sb, valid);
+            attribute.addConstructorValues(settings, sb, id, valid);
         }
         sb.append(")");
         return sb.toString();

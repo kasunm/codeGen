@@ -98,10 +98,12 @@ public class JavaCodeGenerator {
             template.generateFile(template.className + "ServiceTest.java", settings.getJavaTestPackageRoot() + File.separator  + "service", settings, templateText, classSettings, false, false);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("RepositoryTest.java", false);
-            template.generateFile(template.className + "RepositoryTest.java", settings.getJavaTestPackageRoot() + File.separator  + "repo", settings, templateText, classSettings, false, false);
+            template.generateFile(template.className + "RepositoryTest.java", settings.getJavaTestPackageRoot() + File.separator  + "repo", settings, templateText, classSettings, true, true);
 
             templateText = TemplateUtils.getInstance().readTemplateFile("APITest.java", false);
             template.generateFile(template.className + "APITest.java", settings.getJavaTestPackageRoot()  + File.separator  + "api", settings, templateText, classSettings, false, false);
+
+
 
 
         }

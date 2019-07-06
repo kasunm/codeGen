@@ -7,7 +7,7 @@ import ${javaPackage}.error.CustomizedResponseEntityExceptionHandler;
 import ${javaPackage}.model.dto.${className}DTO;
 import ${javaPackage}.model.entity.*;
 import ${javaPackage}.model.enums.*;
-import ${javaPackage}.repo.${className}Repository;
+import ${javaPackage}.repo.*;
 import ${javaPackage}.service.Main${className}Service;
 import org.hamcrest.Matcher;
 import org.hamcrest.collection.IsCollectionWithSize;
@@ -70,11 +70,14 @@ public class ${className}APITest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
+    //No bar
     @Autowired
     private ${className}Repository ${classVariableName}Repository;
-
+    //No war
     private List<${className}> ${classVariableName}s = new ArrayList<>();
+
+     ${dependantBeansHeader}
+
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -84,12 +87,16 @@ public class ${className}APITest {
     }
 
     @Before
-    public void initDaata(){
+    public void initData(){
+        ${dependantBeans}
         ${classVariableName}s.add(${beanID0});
 		${classVariableName}s.add(${beanID01});
 		${classVariableName}s.add(${beanID02});
-
+        try {
         ${classVariableName}Repository.deleteAll();
+        } catch (Throwable e) {
+            //Ignore any constraint violations, delete rest
+        }
         ${className} saved${className} = ${classVariableName}Repository.save(${classVariableName}s.get(0));
         Assert.assertNotNull(saved${className});
         Assert.assertTrue(saved${className}.getId() > 0);

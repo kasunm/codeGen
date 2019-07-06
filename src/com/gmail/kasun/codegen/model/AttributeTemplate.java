@@ -29,6 +29,10 @@ public class AttributeTemplate {
     public Boolean required =  Boolean.FALSE;
     public Boolean showOnGrid = Boolean.TRUE;
     public Boolean includeInDTO  = Boolean.TRUE;
+    public RelationShip relationShip;
+    public String relationShipDTOAttributes;
+
+
     public static String javaTemplateText;
 
     /** -------------- Constructors -------------- **/
@@ -49,7 +53,7 @@ public class AttributeTemplate {
     }
 
     public AttributeTemplate(String attributeName, AttributeType type, Integer min, Integer max) {
-       this(attributeName, type, min, max, true);
+        this(attributeName, type, min, max, true);
     }
 
     public AttributeTemplate(String attributeName, AttributeType type, Integer min, Integer max, Boolean showOnGrid) {
@@ -83,16 +87,30 @@ public class AttributeTemplate {
 
     /** -------------- Java support methods -------------- **/
 
-    public String getJavaAttribute(boolean isEntityClass, String className) throws Exception{
+    public String getJavaAttribute(Settings settings, boolean isEntityClass, String className, String parentAttributeName) throws Exception{
         if(StringUtils.isEmpty(javaTemplateText)) javaTemplateText = TemplateUtils.getInstance().readTemplateFile("javaAttribute", true);
 
         Map<String,String> attributeVariables = new HashMap<String,String>();
-        attributeVariables.put("attributeName",attributeName);
+
+        if(!isEntityClass && relationShip != null && relationShip != RelationShip.NONE  &&  relationShip != RelationShip.OneToMany
+                &&  relationShip != RelationShip.ManyToMany  && !StringUtils.isEmpty(relationShipDTOAttributes) && StringUtils.isEmpty(parentAttributeName)){
+            //use mapped attributes if specified for DTO for ManyToOne, OneToOne,
+            return settings.getMappedAttributeNames(this.classTypeName, className, attributeName,","+  relationShipDTOAttributes + ",");
+        }
+
+        if(!isEntityClass && !includeInDTO) return " ";
+
+        if(StringUtils.isEmpty(parentAttributeName)) attributeVariables.put("attributeName",attributeName);
+        else attributeVariables.put("attributeName",parentAttributeName + StringUtils.capitalize(attributeName));
+
+
 
         if(collectionType == null || collectionType == CollectionType.None){
-            attributeVariables.put("type", getJavaName());
+            if(type == AttributeType.CLASS && !isEntityClass) attributeVariables.put("type", getJavaName() + "DTO");
+            else attributeVariables.put("type", getJavaName());
         }
         else {
+            if(type == AttributeType.CLASS && !isEntityClass) attributeVariables.put("type", collectionType.javaName.replaceAll("type", getJavaName()).replaceAll("key", keyType) + "DTO");
             attributeVariables.put("type", collectionType.javaName.replaceAll("type", getJavaName()).replaceAll("key", keyType));
         }
 
@@ -104,11 +122,12 @@ public class AttributeTemplate {
         }
         addMinMaxJava(header, className);
         if(required){
-            header.append("\n\t@NotNull(message = \"{" + className + "." + attributeName + ".required" +"}\")");
+            header.append("\n\t@NotNull(message = \"{" + className + "." + attributeName  + ".required" +"}\")");
         }
         if(!StringUtils.isEmpty(validatorRegex)){
             header.append("\n\t@Pattern(regexp = \""+validatorRegex+"\", message = \"{"+ className + "." + attributeName + ".pattern}\")");
         }
+        if(isEntityClass && relationShip != null) header.append("\n\t" + relationShip.name);
         attributeVariables.put("attributeJavaHeader",header.toString());
 
         return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
@@ -261,23 +280,33 @@ public class AttributeTemplate {
         return "attribute.form.input.text";
     }
 
-    public void addConstructorValues(Settings settings, StringBuilder sb, boolean valid){
+    public void addConstructorValues(Settings settings, StringBuilder sb, String id, boolean valid){
         if(collectionType != null && collectionType != CollectionType.None) {
-            sb.append(", null");
+            if(type == AttributeType.CLASS || type == AttributeType.ENUM){
+                sb.append(", new " + collectionType.defaultJavaInstance.replaceAll("type", classTypeName).replaceAll("key", keyType) + "()");
+            }else{
+                sb.append(", new " + collectionType.defaultJavaInstance.replaceAll("type", type.javaName).replaceAll("key", keyType) + "()");
+            }
             return;
         }
-      switch (type) {
-          case INT:  sb.append(", ");sb.append(TestDataHelper.getInstance().getRandomIntegerValue(min, max)); break;
-          case LONG: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomLongValue(min, max)); break;
-          case DOUBLE: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomDoubleValue(min, max)); break;
-          case STRING: sb.append(", "); sb.append("\""); sb.append(getStringAttributeValue(valid)); sb.append("\""); break;
-          case DATE: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDate()); break;
-          case DATETIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDateTime()); break;
-          case TIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalTime()); break;
-          case ENUM: sb.append(", ");  sb.append(settings.getRandomEnumValue(classTypeName)); break;
-          case CLASS: sb.append(", ");  sb.append("null"); break;//@TODO implement in future as enhancement
+        String dependantBeanName ;
+        if(!valid){
+            dependantBeanName = attributeName + "2";
+        } else {
+            dependantBeanName = attributeName + "1";
+        }
+        switch (type) {
+            case INT:  sb.append(", ");sb.append(TestDataHelper.getInstance().getRandomIntegerValue(min, max)); break;
+            case LONG: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomLongValue(min, max)); break;
+            case DOUBLE: sb.append(", "); sb.append(TestDataHelper.getInstance().getRandomDoubleValue(min, max)); break;
+            case STRING: sb.append(", "); sb.append("\""); sb.append(getStringAttributeValue(valid)); sb.append("\""); break;
+            case DATE: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDate()); break;
+            case DATETIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalDateTime()); break;
+            case TIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalTime()); break;
+            case ENUM: sb.append(", ");  sb.append(settings.getRandomEnumValue(classTypeName)); break;
+            case CLASS: sb.append(", ");  sb.append(dependantBeanName); break;
 
-      }
+        }
     }
 
     private String getStringAttributeValue(boolean valid){

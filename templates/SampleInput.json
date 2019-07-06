@@ -9,7 +9,7 @@
   "dbUserName":"appartmentadmin",
   "dbPassword":"Super",
   "generateNewAngularProject":false,
-  "generateNewJavaProject":true,
+  "generateNewJavaProject":false,
   "classes":[
     {
       "className":"User",
@@ -122,6 +122,18 @@
           "includeInDTO":true
         },
         {
+          "attributeName":"category",
+          "classTypeName":"ProductCategory",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        },
+
+        {
           "attributeName":"unit",
           "classTypeName":"MeasureUnit",
           "type":"ENUM",
@@ -144,6 +156,47 @@
       "classNameDisplay":"Product",
       "classFileAngular":"product",
       "classVariableName":"product"
+    },
+    {
+      "className":"ProductCategory",
+      "classDescription":"Category of product",
+      "classURL":"categories",
+      "idAttributeName":"id",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":40,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "min":0,
+          "max":500,
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"products",
+          "classTypeName":"ProductCategory",
+          "type":"CLASS",
+          "relationShip":"OneToMany",
+          "collectionType":"List",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        }
+      ],
+      "classNameDisplay":"Product category",
+      "classFileAngular":"product-category",
+      "classVariableName":"productCategory"
     },
     {
       "className":"BankAccount",
