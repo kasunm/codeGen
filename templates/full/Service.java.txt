@@ -49,4 +49,8 @@ public interface ${className}Service {
     ServiceStatus deleteByID(long ${classVariableName}ID);
 
 
+
+${serviceInterfaceSearch}
+
+
 }

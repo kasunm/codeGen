@@ -72,6 +72,11 @@ public class Main${className}Service implements ${className}Service{
          return ServiceStatus.SUCCESS;
     }
 
+      /** ------------- Search methods ------------- */
+
+${serviceSearch}
+
+
     @PostConstruct
     public void initDB(){
 

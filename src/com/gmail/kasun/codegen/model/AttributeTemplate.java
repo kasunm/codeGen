@@ -87,10 +87,15 @@ public class AttributeTemplate {
 
     /** -------------- Java support methods -------------- **/
 
-    public String getJavaAttribute(Settings settings, boolean isEntityClass, String className, String parentAttributeName) throws Exception{
-        if(StringUtils.isEmpty(javaTemplateText)) javaTemplateText = TemplateUtils.getInstance().readTemplateFile("javaAttribute", true);
-
+    public String getJavaAttribute(Settings settings, boolean isEntityClass, String className, String parentAttributeName, boolean skipHeader) throws Exception{
         Map<String,String> attributeVariables = new HashMap<String,String>();
+        return getJavaAttribute(settings, isEntityClass, className, parentAttributeName, skipHeader, attributeVariables);
+    }
+
+    public String getJavaAttribute(Settings settings, boolean isEntityClass, String className, String parentAttributeName, boolean skipHeader,  Map<String,String> attributeVariables) throws Exception{
+        if(StringUtils.isEmpty(javaTemplateText)) javaTemplateText = TemplateUtils.getInstance().readTemplateFile("javaAttribute", true);
+        if(skipHeader) javaTemplateText.replaceAll("private", "");
+
 
         if(!isEntityClass && relationShip != null && relationShip != RelationShip.NONE  &&  relationShip != RelationShip.OneToMany
                 &&  relationShip != RelationShip.ManyToMany  && !StringUtils.isEmpty(relationShipDTOAttributes) && StringUtils.isEmpty(parentAttributeName)){
@@ -114,9 +119,15 @@ public class AttributeTemplate {
             attributeVariables.put("type", collectionType.javaName.replaceAll("type", getJavaName()).replaceAll("key", keyType));
         }
 
+
         //Headers
         StringBuilder header = new StringBuilder(100);
         header.append(" ");
+        if(skipHeader) {
+            attributeVariables.put("attributeJavaHeader",header.toString());
+            return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
+        }
+
         if(isEntityClass && collectionType != null && collectionType != CollectionType.None && !type.isCustomClass()){
             header.append("\n\t@ElementCollection"); //Entity collection
         }

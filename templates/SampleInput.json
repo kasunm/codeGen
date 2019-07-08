@@ -3,7 +3,7 @@
   "javaPackage":"com.kasunm.aggala",
   "javaProjectBasePath":"F:/Develpment/Aggalat",
   "projectDescription":"A food out let specialized for Aggala",
-  "angularProjectName":"AggalaTest",
+  "angularProjectName":"AggalaNew",
   "angularProjectBasePath":"F:/Develpment/Aggala",
   "dbName":"users",
   "dbUserName":"appartmentadmin",
@@ -83,7 +83,15 @@
       ],
       "classNameDisplay":"User",
       "classFileAngular":"user",
-      "classVariableName":"user"
+      "classVariableName":"user",
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameAndAge",
+          "attributeNames": "name,age",
+          "searchUrl": "NameAge",
+          "searchQuery": " "
+        }
+      ]
     },
     {
       "className":"Product",

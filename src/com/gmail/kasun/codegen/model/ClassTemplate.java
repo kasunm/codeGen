@@ -26,6 +26,8 @@ public class ClassTemplate {
     public String classURL;
     public String idAttributeName;
     public List <AttributeTemplate> attributes;
+    public List <SearchOption> searchOptions;
+
 
     //Derived attributes. Populated to map using reflection
     private String classNameDisplay;
@@ -60,11 +62,36 @@ public class ClassTemplate {
         StringBuilder attributeText = new StringBuilder(1000);
         if(attributes == null) return "";
         for(AttributeTemplate template: attributes){
-            attributeText.append(template.getJavaAttribute(settings, isEntityClass, className, ""));
+            attributeText.append(template.getJavaAttribute(settings, isEntityClass, className, "", false));
             attributeText.append("\n");
         }
         return attributeText.toString();
     }
+
+    public void addSearchAttributeNames(Settings settings, String matchingAttributes, StringBuilder attributeDeclarations, StringBuilder attributeParameters, StringBuilder attributeValidations) throws Exception{
+        if(attributes == null) return ;
+        int count = 0;
+        for(AttributeTemplate template: attributes){
+            if(matchingAttributes.contains(template.attributeName)){ //@TODO in future support derived attributes
+                Map<String,String> attributeVariables = new HashMap<String,String>();
+                if(count ++ > 0){
+                    attributeDeclarations.append(", ");
+                    attributeParameters.append("\n");
+                }
+
+                template.getJavaAttribute(settings, false, className, "", true, attributeVariables);
+                attributeDeclarations.append(attributeVariables.get("type") + " " + attributeVariables.get("attributeName"));
+                attributeParameters.append("     * @param " + attributeVariables.get("attributeName") + " " + attributeVariables.get("type"));
+                attributeValidations.append("\t\tAssert.notNull(" +template.attributeName + ", \"Expects a valid "+ template.attributeName +"\");\n");
+                if(template.type == AttributeType.INT || template.type == AttributeType.LONG || template.type == AttributeType.DOUBLE){
+                    attributeValidations.append( "\t\tAssert.isTrue(" + template.attributeName + " > 0, \"Expects a valid "+ template.attributeName +" > 0\");\n");
+                }
+
+            }
+        }
+    }
+
+
 
     public String getMappedAttributeNames( String mainAttributeName, String callingClassName, String expectedAttributeNames) throws Exception{
         StringBuilder attributeText = new StringBuilder(1000);
@@ -74,7 +101,7 @@ public class ClassTemplate {
         }
         for(AttributeTemplate template: attributes){
             if(expectedAttributeNames.contains(","+ template.attributeName + ",")) {
-                attributeText.append(template.getJavaAttribute(null, false, this.className, mainAttributeName));
+                attributeText.append(template.getJavaAttribute(null, false, this.className, mainAttributeName, false));
                 attributeText.append("\n");
             }
         }
@@ -119,6 +146,50 @@ public class ClassTemplate {
         dependantBeans.append(" ");
         variables.put("dependantBeans", dependantBeans.toString());
         variables.put("dependantBeansHeader", dependantBeanHeader.toString());
+
+        if(searchOptions == null){
+            variables.put("controllerSearch", " ");
+            variables.put("serviceSearch", " ");
+            variables.put("serviceInterfaceSearch", " ");
+            variables.put("repoSearch", " ");
+            return;
+        }
+
+        StringBuilder controllerSearch = new StringBuilder(4000);
+        StringBuilder serviceSearch = new StringBuilder(4000);
+        StringBuilder repoSearch = new StringBuilder(4000);
+        StringBuilder serviceInterfaceSearch = new StringBuilder(4000);
+        controllerSearch.append(" ");
+        serviceSearch.append(" ");
+        repoSearch.append(" ");
+
+        for(SearchOption searchOption: searchOptions){
+            StringBuilder params = new StringBuilder(200);
+            StringBuilder declare = new StringBuilder(200);
+            StringBuilder validation = new StringBuilder(200);
+            addSearchAttributeNames(settings, "," + searchOption.attributeNames + ",", declare, params, validation);
+            Map<String, String> searchVariables = new HashMap<>();
+            MiscUtils.addClassStringAttributes(searchOption, searchVariables);
+            MiscUtils.addClassStringAttributes(this, searchVariables);
+            searchVariables.put("paramComment", params.toString());
+            searchVariables.put("args", declare.toString());
+            searchVariables.put("argsValidate", validation.toString());
+            searchVariables.put("attributeValues", searchOption.attributeNames.replaceAll(","," + \",\" + "));
+            searchVariables.put("searchUrl",  searchOption.searchUrl + "/{" + searchOption.attributeNames.replaceAll(",","}/{") + "}");
+            controllerSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.controller, searchVariables));
+            controllerSearch.append("\n");
+            serviceSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.service, searchVariables));
+            serviceSearch.append("\n");
+            serviceInterfaceSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.serviceInterface, searchVariables));
+            serviceInterfaceSearch.append("\n");
+            repoSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.repo, searchVariables));
+            repoSearch.append("\n");
+
+        }
+        variables.put("controllerSearch", controllerSearch.toString());
+        variables.put("serviceSearch", serviceSearch.toString());
+        variables.put("serviceInterfaceSearch", serviceInterfaceSearch.toString());
+        variables.put("repoSearch", repoSearch.toString());
     }
 
     private void addDependatBeanInstance(Settings settings, StringBuilder dependantBeans, StringBuilder dependantBeanHeader, AttributeTemplate attributeTemplate, int id, boolean valid, boolean isEntity) {
