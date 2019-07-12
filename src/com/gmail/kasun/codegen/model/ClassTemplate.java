@@ -4,10 +4,7 @@ import com.gmail.kasun.codegen.util.MiscUtils;
 import com.gmail.kasun.codegen.util.TemplateUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * <p>Title         : ${FILE_NAME}
@@ -149,19 +146,28 @@ public class ClassTemplate {
 
         if(searchOptions == null){
             variables.put("controllerSearch", " ");
+            variables.put("searchTestController", " ");
             variables.put("serviceSearch", " ");
+            variables.put("searchTestService", " ");
             variables.put("serviceInterfaceSearch", " ");
             variables.put("repoSearch", " ");
+            variables.put("searchTestRepo", " ");
             return;
         }
 
         StringBuilder controllerSearch = new StringBuilder(4000);
+        StringBuilder controllerSearchTest = new StringBuilder(4000);
+        StringBuilder serviceSearchTest = new StringBuilder(4000);
+        StringBuilder repoSearchTest = new StringBuilder(4000);
         StringBuilder serviceSearch = new StringBuilder(4000);
         StringBuilder repoSearch = new StringBuilder(4000);
         StringBuilder serviceInterfaceSearch = new StringBuilder(4000);
         controllerSearch.append(" ");
+        controllerSearchTest.append(" ");
         serviceSearch.append(" ");
+        serviceSearchTest.append(" ");
         repoSearch.append(" ");
+        repoSearchTest.append(" ");
 
         for(SearchOption searchOption: searchOptions){
             StringBuilder params = new StringBuilder(200);
@@ -173,23 +179,58 @@ public class ClassTemplate {
             MiscUtils.addClassStringAttributes(this, searchVariables);
             searchVariables.put("paramComment", params.toString());
             searchVariables.put("args", declare.toString());
+            searchVariables.put("argsController", "@PathVariable " +  declare.toString().replaceAll(",", ", @PathVariable "));
             searchVariables.put("argsValidate", validation.toString());
             searchVariables.put("attributeValues", searchOption.attributeNames.replaceAll(","," + \",\" + "));
             searchVariables.put("searchUrl",  searchOption.searchUrl + "/{" + searchOption.attributeNames.replaceAll(",","}/{") + "}");
+            searchVariables.put("testDataValues", getTestDataValues(searchOption.attributeNames));
+            searchVariables.put("anyDataValues", getParamDataValues(searchOption.attributeNames, "any()"));
+            searchVariables.put("nullDataValues", getParamDataValues(searchOption.attributeNames, "null"));
             controllerSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.controller, searchVariables));
             controllerSearch.append("\n");
+            controllerSearchTest.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.controllerTest, searchVariables));
+            controllerSearchTest.append("\n");
+
             serviceSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.service, searchVariables));
             serviceSearch.append("\n");
+            serviceSearchTest.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.serviceSearchTest, searchVariables));
+            serviceSearchTest.append("\n");
+
+
             serviceInterfaceSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.serviceInterface, searchVariables));
             serviceInterfaceSearch.append("\n");
             repoSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.repo, searchVariables));
             repoSearch.append("\n");
 
+
         }
         variables.put("controllerSearch", controllerSearch.toString());
+        variables.put("searchTestController", controllerSearchTest.toString());
         variables.put("serviceSearch", serviceSearch.toString());
+        variables.put("searchTestService", serviceSearchTest.toString());
         variables.put("serviceInterfaceSearch", serviceInterfaceSearch.toString());
         variables.put("repoSearch", repoSearch.toString());
+        variables.put("searchTestRepo", " ");
+    }
+
+    private String getTestDataValues(String commaSeparatedAttributes){
+        String [] tags = commaSeparatedAttributes.split(",");
+        StringBuilder result = new StringBuilder(50);
+        for(int i=0; i < tags.length; i++){
+            if(i > 0) result.append(" ,");
+            result.append("users.get(0).get" + StringUtils.capitalize(tags[i]) + "()");
+        }
+        return result.toString();
+    }
+
+    private String getParamDataValues(String commaSeparatedAttributes, String fixedValue){
+        String [] tags = commaSeparatedAttributes.split(",");
+        StringBuilder result = new StringBuilder(50);
+        for(int i=0; i < tags.length; i++){
+            if(i > 0) result.append(" ,");
+            result.append(fixedValue);
+        }
+        return result.toString();
     }
 
     private void addDependatBeanInstance(Settings settings, StringBuilder dependantBeans, StringBuilder dependantBeanHeader, AttributeTemplate attributeTemplate, int id, boolean valid, boolean isEntity) {

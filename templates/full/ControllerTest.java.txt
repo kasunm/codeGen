@@ -257,6 +257,8 @@ public class ${className}ControllerTest {
         }
     }
 
+${searchTestController}
+
 
     private ${className}DTO getDTO(${className} ${classVariableName}){
         return modelMapper.map(${classVariableName}, ${className}DTO.class);

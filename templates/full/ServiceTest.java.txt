@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -182,6 +183,8 @@ public class ${className}ServiceTest {
             Assert.assertTrue("Expect entity not found for deletion", status == null);
         }
     }
+
+${searchTestService}
 
 
 
