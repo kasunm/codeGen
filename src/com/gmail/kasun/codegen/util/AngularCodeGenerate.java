@@ -71,6 +71,7 @@ public class AngularCodeGenerate {
     }
 
     private void generateDynamicClasses(Settings settings) throws Exception {
+        settings.loadDerivedAttributes();
         for(EnumTemplate template: settings.enums){
             Map classSettings = new HashMap<String, String>();
             classSettings.put("angularProjectName", settings.angularProjectName );
@@ -85,7 +86,7 @@ public class AngularCodeGenerate {
             Map classSettings = new HashMap<String, String>();
             classSettings.put("angularProjectName", settings.angularProjectName );
             classSettings.put("projectDescription", settings.projectDescription );
-            classSettings.put("attributesComma", template.getAngularConstructor());
+            classSettings.put("attributesComma", template.getAngularConstructor(settings));
             classSettings.put("attributesToString", template.getToString());
             classSettings.put("enumImports", template.getEnumImports());
             classSettings.put("detail.class.enumCollection", template.getEnumKeys(getTag("detail.class.enumCollection")));

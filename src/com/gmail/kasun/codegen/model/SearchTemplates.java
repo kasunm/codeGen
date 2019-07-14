@@ -25,7 +25,7 @@ public class SearchTemplates {
 
     public static String service = "\t/**\n" +
             "     * Find  ${classVariableName}s by ${attributeNames}\n" +
-            "{paramComment}     \n" +
+            "${paramComment}     \n" +
             "     * @return List<${className}>\n" +
             "     */\n" +
             "    public List<${className}> ${methodName}(${args}){\n" +

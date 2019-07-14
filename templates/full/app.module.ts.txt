@@ -7,6 +7,7 @@ import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgModule} from '@angular/core';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
@@ -39,7 +40,6 @@ ${model.class.import}
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    NgbModule.forRoot(),
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     ButtonsModule.forRoot(),

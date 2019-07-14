@@ -6,6 +6,7 @@ import com.gmail.kasun.codegen.util.TestDataHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,10 +33,28 @@ public class AttributeTemplate {
     public RelationShip relationShip;
     public String relationShipDTOAttributes;
 
+    protected List<AttributeTemplate> derivedAttributes;
+
 
     public static String javaTemplateText;
 
     /** -------------- Constructors -------------- **/
+
+     public AttributeTemplate(AttributeTemplate another){
+         this.attributeName = another.attributeName;
+         this.classTypeName = another.classTypeName;
+         this.type = another.type;
+         this.collectionType = another.collectionType;
+         this.min = another.min;
+         this.max = another.max;
+         this.keyType = another.keyType;
+         this.validatorRegex = another.validatorRegex;
+         this.required = another.required;
+         this.showOnGrid = another.showOnGrid;
+         this.includeInDTO = another.includeInDTO;
+         this.relationShip = another.relationShip;
+         this.relationShipDTOAttributes = another.relationShipDTOAttributes;
+     }
 
     public AttributeTemplate(String attributeName) {
         this.attributeName = attributeName;
@@ -198,11 +217,27 @@ public class AttributeTemplate {
 
     /** -------------- Angular support methods -------------- **/
 
-    public String getAngularAttribute(){
-        return "public " + attributeName +  "?: "
-                + ((collectionType == null || collectionType == CollectionType.None) ?
-                getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
-        );
+    public String getAngularAttribute(Settings settings, String className,String parentAttributeName){
+        if( relationShip != null && relationShip != RelationShip.NONE  &&  relationShip != RelationShip.OneToMany
+                &&  relationShip != RelationShip.ManyToMany  && !StringUtils.isEmpty(relationShipDTOAttributes) && StringUtils.isEmpty(parentAttributeName)){
+            //use mapped attributes if specified for DTO for ManyToOne, OneToOne,
+            return settings.getMappedAngularAttributes(this.classTypeName, className, attributeName,","+  relationShipDTOAttributes + ",");
+        }
+
+        if(StringUtils.isEmpty(parentAttributeName)){
+            return "public " + attributeName +  "?: "
+                    + ((collectionType == null || collectionType == CollectionType.None) ?
+                    getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
+            );
+        }else {
+            return "public " + parentAttributeName + StringUtils.capitalize(attributeName) +  "?: "
+                    + ((collectionType == null || collectionType == CollectionType.None) ?
+                    getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
+            );
+
+        }
+
+
 
     }
 
@@ -230,6 +265,15 @@ public class AttributeTemplate {
      * E.g name: ['', [Validators.required, Validators.minLength(4) ] ]
      */
     public void addToAngularFormBuilder(StringBuilder sb){
+        if(derivedAttributes != null && derivedAttributes.size() > 0){
+            int count = derivedAttributes.size();
+            for(AttributeTemplate derived: derivedAttributes){
+                derived.addToAngularFormBuilder(sb);
+                if(count-- > 1) sb.append(",");
+                sb.append("\n");
+            }
+            return;
+        }
         int validatorCount = 0;
         sb.append(attributeName);
         sb.append(": [''" );
@@ -280,10 +324,17 @@ public class AttributeTemplate {
         }
         if(type == AttributeType.ENUM) return "attribute.form.input.select.enum";
         if(type == AttributeType.INT || type == AttributeType.LONG || type == AttributeType.DOUBLE){
+            if(attributeName.endsWith("Id")) return "attribute.form.input.id";
             return "attribute.form.input.number";
         }
-        if(type == AttributeType.DATE || type == AttributeType.DATETIME){
-            return "attribute.form.input.text";//@TODO correct input
+        if(type == AttributeType.DATE){
+            return "attribute.form.input.date";//@TODO correct input
+        }
+        if(type == AttributeType.TIME){
+            return "attribute.form.input.time";//@TODO correct input
+        }
+        if(type == AttributeType.DATETIME){
+            return "attribute.form.input.dateTime";//@TODO correct input
         }
         if(max != null && max > 150) return "attribute.form.input.textarea";
         if(attributeName.toLowerCase().contains("password")) return "attribute.form.input.password";

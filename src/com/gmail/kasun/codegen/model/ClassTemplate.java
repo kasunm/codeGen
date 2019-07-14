@@ -262,26 +262,37 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
-            if(!attribute.includeInDTO) continue;
-            if(showInGrid && (attribute.showOnGrid == null || !attribute.showOnGrid)) continue;
-
-            if(count ++ > 0) sb.append("\n");
-            if(attribute.type == AttributeType.ENUM && !StringUtils.isEmpty(enumSpecialTemplate)){
-                sb.append(enumSpecialTemplate.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
-                        .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
-                        .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
-                        .replaceAll("\\$\\{classVariableName\\}", classVariableName)
-                );
-            }else{
-                sb.append(partialTemplateText.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
-                        .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
-                        .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
-                        .replaceAll("\\$\\{classVariableName\\}", classVariableName)
-                );
+            if(StringUtils.isEmpty(attribute.relationShipDTOAttributes))  count = addToAngularAttribute(partialTemplateText, enumSpecialTemplate, showInGrid, sb, count, attribute);
+            else {
+                 for(AttributeTemplate derived: attribute.derivedAttributes){
+                     count = addToAngularAttribute(partialTemplateText, enumSpecialTemplate, showInGrid, sb, count, derived);
+                 }
             }
-
         }
+
+
         return sb.toString();
+    }
+
+    private int addToAngularAttribute(String partialTemplateText, String enumSpecialTemplate, boolean showInGrid, StringBuilder sb, int count, AttributeTemplate attribute) {
+        if(!attribute.includeInDTO) return count;
+        if(showInGrid && (attribute.showOnGrid == null || !attribute.showOnGrid)) return count;
+
+        if(count ++ > 0) sb.append("\n");
+        if(attribute.type == AttributeType.ENUM && !StringUtils.isEmpty(enumSpecialTemplate)){
+            sb.append(enumSpecialTemplate.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
+                    .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
+                    .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
+                    .replaceAll("\\$\\{classVariableName\\}", classVariableName)
+            );
+        }else{
+            sb.append(partialTemplateText.replaceAll("\\$\\{attributeName\\}", attribute.attributeName)
+                    .replaceAll("\\$\\{attributeError\\}", attribute.getAngularErrorMessage())
+                    .replaceAll("\\$\\{attributeDisplayName\\}", attribute.getDisplayName())
+                    .replaceAll("\\$\\{classVariableName\\}", classVariableName)
+            );
+        }
+        return count;
     }
 
     public void addJavaAttributeResources(StringBuilder resources) throws Exception{
@@ -293,7 +304,14 @@ public class ClassTemplate {
     public String getAttributeFormElementHTML(Properties props){
         StringBuilder sb = new StringBuilder(3000);
         for(AttributeTemplate attribute: attributes){
-            attribute.addAttributeFormElementHTML(props, sb);
+            if(attribute.derivedAttributes != null && attribute.derivedAttributes.size() > 0){
+                for(AttributeTemplate derived: attribute.derivedAttributes){
+                    derived.addAttributeFormElementHTML(props, sb);
+                }
+            } else {
+                attribute.addAttributeFormElementHTML(props, sb);
+            }
+
         }
         return sb.toString();
     }
@@ -302,23 +320,35 @@ public class ClassTemplate {
         StringBuilder validators = new StringBuilder(2500);
         int count = attributes.size();
         for(AttributeTemplate attributeTemplate: attributes){
-            attributeTemplate.addToAngularFormBuilder(validators);
-            if(count-- > 1) validators.append(",");
-            validators.append("\n");
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                for(AttributeTemplate derived: attributeTemplate.derivedAttributes){
+                    count += attributeTemplate.derivedAttributes.size();
+                    derived.addToAngularFormBuilder(validators);
+                    if (count-- > 1) validators.append(",");
+                    validators.append("\n");
+                }
+            } else {
+                attributeTemplate.addToAngularFormBuilder(validators);
+                if (count-- > 1) validators.append(",");
+                validators.append("\n");
+            }
         }
         return validators.toString();
     }
 
-    public String getAngularConstructor(){
+    public String getAngularConstructor(Settings settings){
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
             if(!attribute.includeInDTO) continue;
             if( count++ > 0) sb.append(", ");
-            sb.append(attribute.getAngularAttribute());
+
+            sb.append(attribute.getAngularAttribute(settings, className, ""));
         }
         return sb.toString();
     }
+
+
 
     public String getAngularAttributeNames(String separator, boolean skipLast){
         StringBuilder sb = new StringBuilder(300);
@@ -331,13 +361,29 @@ public class ClassTemplate {
         return sb.toString();
     }
 
+    public String getMappedAngularAttributes(Settings settings,   String mainAttributeName, String expectedAttributeNames) {
+        if(attributes == null) return "";
+
+        StringBuilder sb = new StringBuilder(300);
+        if(expectedAttributeNames.contains("id")){
+            sb.append(" public " + mainAttributeName + "Id ?: number");
+        }
+        for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
+            sb.append(", ");
+            sb.append(attribute.getAngularAttribute(settings, this.className, mainAttributeName));
+        }
+        return sb.toString();
+    }
+
     public String getToString(){
         StringBuilder sb = new StringBuilder(300);
+
         int count = 0;
         for(AttributeTemplate attribute: attributes){
             if(!attribute.includeInDTO) continue;
             if(count++ > 0) sb.append(" + ', ' + ");
-            sb.append("'"+attribute.attributeName+":' + this."+attribute.attributeName+"" );
+            if(StringUtils.isEmpty(attribute.relationShipDTOAttributes)) sb.append("'"+attribute.attributeName+":' + this."+attribute.attributeName+"" );
         }
         return sb.toString();
     }
@@ -383,6 +429,32 @@ public class ClassTemplate {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    public void loadDerivedAttributes(Settings settings){
+        for(AttributeTemplate attribute: attributes){
+            if(!StringUtils.isEmpty(attribute.relationShipDTOAttributes)){
+                attribute.derivedAttributes = settings.getDerivedAttributeNames(attribute.classTypeName, attribute.relationShipDTOAttributes, attribute.attributeName);
+            }
+        }
+    }
+
+
+    public List<AttributeTemplate> getDerivedAttributeNames(String expectedAttributeNames, String prefix) {
+        List<AttributeTemplate> templateList = new ArrayList<>();
+        String matchingAttributes = "," + expectedAttributeNames + ",";
+        if(matchingAttributes.contains(",id,")){
+            AttributeTemplate idTemplate = new AttributeTemplate(prefix + "Id",AttributeType.LONG);
+            idTemplate.required = true;
+            idTemplate.showOnGrid = false;
+            templateList.add(idTemplate);
+        }
+        for(AttributeTemplate attribute: attributes){
+            AttributeTemplate clone = new AttributeTemplate(attribute);
+            clone.attributeName = prefix + StringUtils.capitalize(clone.attributeName);
+           if(matchingAttributes.contains("," + attribute.attributeName + ",")) templateList.add(clone);
+        }
+        return templateList;
     }
 
 }

@@ -98,6 +98,8 @@ public class Settings {
 
 
 
+
+
     public boolean isValidToOverride(File file){
         return true;
     }
@@ -164,4 +166,23 @@ public class Settings {
     }
 
 
+    public String getMappedAngularAttributes(String className, String callingClassName, String mainAttributeName, String expectedAttributeNames) {
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate.getMappedAngularAttributes( this,    mainAttributeName, expectedAttributeNames);
+        }
+        return " ";
+    }
+
+    public List<AttributeTemplate> getDerivedAttributeNames(String className, String expectedAttributeNames, String prefix){
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate.getDerivedAttributeNames( expectedAttributeNames, prefix);
+        }
+        return null;
+    }
+
+    public void loadDerivedAttributes(){
+        for(ClassTemplate classTemplate: classes){
+            classTemplate.loadDerivedAttributes(this);
+        }
+    }
 }
