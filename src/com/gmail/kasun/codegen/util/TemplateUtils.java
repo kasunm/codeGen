@@ -78,6 +78,7 @@ public class TemplateUtils {
         while(matcher.find()) {
             String variable = matcher.group(1);
             String value = Matcher.quoteReplacement(variableValues.get(variable.substring(2, variable.length() - 1)));
+            if(StringUtils.isEmpty(value)) value = " ";
             try {
                 if(!StringUtils.isEmpty(value))      matcher.appendReplacement(sb, value);
             } catch (Throwable e) {

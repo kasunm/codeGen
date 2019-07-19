@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
  * @version 1.0
  */
 public enum AttributeType {
-    STRING("String", "string"), INT("Integer", "number"), LONG("Long", "number"), DOUBLE("Double", "number"),  DATE("LocalDate", "Date"), DATETIME("LocalDateTime","Date"), TIME("LocalTime","string"), CLASS("Object", "any"), ENUM("Object", "any");
+    STRING("String", "string"), INT("Integer", "number"), LONG("Long", "number"), BLOB("byte[]","string"), CLOB("String","string"), DOUBLE("Double", "number"),  DATE("LocalDate", "Date"), DATETIME("LocalDateTime","Date"), TIME("LocalTime","string"), CLASS("Object", "any"), ENUM("Object", "any");
 
     public String javaName;
     public String angularName;

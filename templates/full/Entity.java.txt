@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
@@ -27,10 +28,9 @@ import ${javaPackage}.model.enums.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ${className} {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Long ${idAttributeName};
+${specialAnnotation}
+public class ${className} ${inheritedClassName}{
+    ${idDeclaration}
 
     ${classAttributes}
 

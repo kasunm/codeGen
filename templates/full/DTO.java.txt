@@ -21,9 +21,9 @@ import java.util.*;
 
 @Data
 @NoArgsConstructor
-public class ${className}DTO {
-    @NotNull
-    private Long ${idAttributeName};
+public class ${className}DTO ${inheritedDTOName}{
+    ${idDeclaration}
+
 
     ${classAttributes}
 

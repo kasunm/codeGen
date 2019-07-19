@@ -1,0 +1,1047 @@
+{
+  "javaProjectName":"Ams",
+  "javaPackage":"lk.empire.ams",
+  "javaProjectBasePath":"F:/Develpment/Ams",
+  "projectDescription":"Apartment management system for empire apartments",
+  "angularProjectName":"AmsUI",
+  "angularProjectBasePath":"F:/Develpment/Ams",
+  "dbName":"ams",
+  "dbUserName":"appartmentadmin",
+  "dbPassword":"Super",
+  "generateNewAngularProject":false,
+  "generateNewJavaProject":false,
+  "classes":[
+    {
+      "className":"Apartment",
+      "classDescription":"An apartment",
+      "classURL":"apartments",
+      "idAttributeName":"id",
+      "classNameDisplay":"Apartment",
+      "classFileAngular":"apartment",
+      "classVariableName":"apartment",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":100,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"maintenanceList",
+          "classTypeName":"Maintenance",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"floors",
+          "classTypeName":"Floor",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+
+        {
+          "attributeName":"events",
+          "classTypeName":"Event",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"logo",
+          "type":"STRING",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByName",
+          "attributeNames": "name",
+          "searchUrl": "Name",
+          "searchQuery": " "
+        }
+      ]
+    },
+
+
+    {
+      "className":"Client",
+      "classDescription":"A Client of apartment",
+      "classURL":"clients",
+      "inheritedClassName":"User",
+      "idAttributeName":"id",
+      "classNameDisplay":"Client",
+      "classFileAngular":"client",
+      "classVariableName":"client",
+      "attributes":[
+        {
+          "attributeName":"userName",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":20,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"password",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":200,
+          "required":true,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"ownedUnits",
+          "classTypeName":"Unit",
+          "type":"CLASS",
+          "collectionType":"Set",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"rentedUnits",
+          "classTypeName":"Unit",
+          "type":"CLASS",
+          "collectionType":"Set",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"notificationList",
+          "classTypeName":"Notification",
+          "type":"CLASS",
+          "collectionType":"Set",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"events",
+          "classTypeName":"Event",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        }
+      ]
+    },
+
+    {
+      "className":"User",
+      "classDescription":"A User of apartment",
+      "classURL":"users",
+      "hasChildren":true,
+      "idAttributeName":"id",
+      "classNameDisplay":"User",
+      "classFileAngular":"user",
+      "classVariableName":"user",
+      "attributes":[
+        {
+          "attributeName":"firstName",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":100,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"lastName",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":100,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"email",
+          "type":"STRING",
+          "validatorRegex":"^[A-Za-z0-9+_.-]+@(.+)$",
+          "collectionType":"None",
+          "min":0,
+          "max":100,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"addressLine1",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":100,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"addressLine2",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":100,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"contact1",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":10,
+          "validatorRegex": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\\\s\\\\.\/0-9]*$",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"contact2",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":10,
+          "validatorRegex": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\\\s\\\\.\/0-9]*$",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"nic",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":30,
+          "validatorRegex": "^([0-9]{9}[x|X|v|V]|[0-9]{12})$",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"userRole",
+          "classTypeName":"UserRole",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+
+      ]
+    },
+
+    {
+      "className":"Contractor",
+      "classDescription":"A Contractor of apartment",
+      "classURL":"contractors",
+      "inheritedClassName":"User",
+      "idAttributeName":"id",
+      "classNameDisplay":"Contractor",
+      "classFileAngular":"contractor",
+      "classVariableName":"contractor",
+      "attributes":[
+        {
+          "attributeName":"companyName",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":30,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"maintenances",
+          "classTypeName":"Maintenance",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        }
+      ]
+    },
+
+    {
+      "className":"Employee",
+      "classDescription":"An Employee of apartment",
+      "classURL":"employees",
+      "inheritedClassName":"User",
+      "idAttributeName":"id",
+      "classNameDisplay":"Employee",
+      "classFileAngular":"employee",
+      "classVariableName":"employee",
+      "attributes":[
+        {
+          "attributeName":"empEventList",
+          "classTypeName":"Event",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        }
+      ]
+    },
+
+    {
+      "className":"CommonArea",
+      "classDescription":"A Common area of apartment",
+      "classURL":"commonAreas",
+      "idAttributeName":"id",
+      "classNameDisplay":"Common Area",
+      "classFileAngular":"common-area",
+      "classVariableName":"commonArea",
+      "attributes":[
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":2000,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"image",
+          "type":"STRING",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"type",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":100,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"availability",
+          "classTypeName":"Availability",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"floor",
+          "classTypeName":"Floor",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "relationShipDTOAttributes":"id,name,number",
+          "includeInDTO":true
+        }
+      ]
+    },
+
+    {
+      "className":"Event",
+      "classDescription":"An Event of apartment",
+      "classURL":"events",
+      "idAttributeName":"id",
+      "classNameDisplay":"Event",
+      "classFileAngular":"event",
+      "classVariableName":"event",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":3,
+          "max":150,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"repeat",
+          "type":"LONG",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":2000,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"status",
+          "classTypeName":"EventStatus",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"date",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"startTime",
+          "type":"TIME",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"endTime",
+          "type":"TIME",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"eventType",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":100,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"allowedGroup",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":200,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+
+        {
+          "attributeName":"apartment",
+          "classTypeName":"Apartment",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"user",
+          "classTypeName":"Client",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        },{
+          "attributeName":"employee",
+          "classTypeName":"Employee",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        }
+      ]
+    },
+    {
+      "className":"Feature",
+      "classDescription":"A Feature of an apartment",
+      "classURL":"features",
+      "idAttributeName":"id",
+      "classNameDisplay":"Feature",
+      "classFileAngular":"feature",
+      "classVariableName":"feature",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":60,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"image",
+          "type":"BLOB",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        }
+      ]
+    },
+    {
+      "className":"Floor",
+      "classDescription":"A floor of an apartment",
+      "classURL":"floors",
+      "idAttributeName":"id",
+      "classNameDisplay":"Floor",
+      "classFileAngular":"floor",
+      "classVariableName":"floor",
+      "attributes":[
+        {
+          "attributeName":"color",
+          "type":"STRING",
+          "collectionType":"None",
+          "max":20,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 20,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"floorNumber",
+          "type":"INT",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"apartment",
+          "classTypeName":"Apartment",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        }
+      ]
+    },
+
+    {
+      "className":"Inquiry",
+      "classDescription":"An Inquiry for apartment",
+      "classURL":"inquiries",
+      "idAttributeName":"id",
+      "classNameDisplay":"Inquiry",
+      "classFileAngular":"inquiry",
+      "classVariableName":"inquiry",
+      "attributes":[
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":2000,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"image",
+          "type":"BLOB",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+
+
+        {
+          "attributeName":"status",
+          "classTypeName":"InquiryStatus",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"type",
+          "classTypeName":"InquiryType",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"action",
+          "classTypeName":"InquiryAction",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+
+        {
+          "attributeName":"openDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"closeDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+
+
+        {
+          "attributeName":"client",
+          "classTypeName":"Client",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        },{
+          "attributeName":"employee",
+          "classTypeName":"Employee",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        }
+      ]
+    },
+
+    {
+      "className": "Maintenance",
+      "classDescription": "An Maintenance for the apartment",
+      "classURL": "maintenance",
+      "idAttributeName": "id",
+      "classNameDisplay": "Maintenance",
+      "classFileAngular": "maintenance",
+      "classVariableName": "maintenance",
+      "attributes": [
+        {
+          "attributeName": "description",
+          "type": "STRING",
+          "collectionType": "None",
+          "min": 0,
+          "max": 2000,
+          "required": false,
+          "showOnGrid": false,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "blockName",
+          "type": "STRING",
+          "collectionType": "None",
+          "min": 0,
+          "max": 50,
+          "required": false,
+          "showOnGrid": false,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "doneBy",
+          "type": "STRING",
+          "collectionType": "None",
+          "min": 0,
+          "max": 50,
+          "required": false,
+          "showOnGrid": false,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "maintenanceType",
+          "classTypeName": "MaintenanceType",
+          "type": "ENUM",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": true,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "status",
+          "classTypeName": "MaintenanceStatus",
+          "type": "ENUM",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": true,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "startDate",
+          "type": "DATE",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": true,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "endDate",
+          "type": "DATE",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": true,
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "contractor",
+          "classTypeName": "Contractor",
+          "type": "CLASS",
+          "relationShip": "ManyToOne",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": false,
+          "relationShipDTOAttributes": "id,firstName,lastName",
+          "includeInDTO": true
+        },
+        {
+          "attributeName": "floor",
+          "classTypeName": "Floor",
+          "type": "CLASS",
+          "relationShip": "ManyToOne",
+          "collectionType": "None",
+          "required": false,
+          "showOnGrid": false,
+          "relationShipDTOAttributes": "id,firstName,lastName",
+          "includeInDTO": true
+        }
+      ]
+    },
+    {
+      "className":"Notification",
+      "classDescription":"A Notification of an apartment",
+      "classURL":"notifications",
+      "idAttributeName":"id",
+      "classNameDisplay":"Notification",
+      "classFileAngular":"notification",
+      "classVariableName":"notification",
+      "attributes":[
+        {
+          "attributeName":"description",
+          "type":"STRING",
+          "collectionType":"None",
+          "min":0,
+          "max":2000,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 20,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"startDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"expiredDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+      ]
+    },
+    {
+      "className":"Payment",
+      "classDescription":"A Payment for of an apartment or related activity",
+      "classURL":"payments",
+      "idAttributeName":"id",
+      "classNameDisplay":"Payment",
+      "classFileAngular":"payment",
+      "classVariableName":"payment",
+      "attributes":[
+        {
+          "attributeName":"paymentMethod",
+          "classTypeName":"PaymentMethod",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"status",
+          "classTypeName":"PaymentStatus",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+
+        {
+          "attributeName":"date",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"dueDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"endDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"recurringInterval",
+          "type":"LONG",
+          "collectionType":"None",
+          "min": 0,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"gracePeriod",
+          "type":"LONG",
+          "collectionType":"None",
+          "min": 0,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"amount",
+          "type":"DOUBLE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"unit",
+          "classTypeName":"Unit",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        }
+      ]
+    },
+
+    {
+      "className":"Unit",
+      "classDescription":"A Unit of of an apartment",
+      "classURL":"units",
+      "idAttributeName":"id",
+      "classNameDisplay":"Unit",
+      "classFileAngular":"units",
+      "classVariableName":"units",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 3,
+          "max": 100,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"owner",
+          "classTypeName":"Client",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"renter",
+          "classTypeName":"Client",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,,firstName,lastName",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"floor",
+          "classTypeName":"Floor",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name,number",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"availability",
+          "classTypeName":"Availability",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+
+      ]
+    }
+
+
+
+
+
+
+    ]
+    ,
+  "enums":[
+    {
+      "enumName":"Availability",
+      "enumValues":"Available,Unavailable"
+    },
+    {
+      "enumName":"UserRole",
+      "enumValues":"Tenant,Owner"
+    },
+    {
+      "enumName":"EventStatus",
+      "enumValues":"Pending,Approved,Rejected"
+    },
+    {
+      "enumName":"InquiryStatus",
+      "enumValues":"Pending,Seen"
+    },
+    {
+      "enumName":"InquiryType",
+      "enumValues":"Complain,Suggestion,Appreciation"
+    },
+    {
+      "enumName":"InquiryAction",
+      "enumValues":"Approved,Planned,Done,Rejected"
+    },
+    {
+      "enumName":"PaymentMethod",
+      "enumValues":"Cash,DebitCard,CreditCard,Cheque,BankTransfer,Other"
+    },
+    {
+      "enumName":"PaymentStatus",
+      "enumValues":"Pending,Completed"
+    },
+    {
+      "enumName":"MaintenanceType",
+      "enumValues":"CommonArea,Apartment"
+    },
+    {
+      "enumName":"MaintenanceStatus",
+      "enumValues":"Pending,Ongoing,Completed"
+    }
+
+
+
+
+
+
+  ]
+}

@@ -158,6 +158,10 @@ public class AttributeTemplate {
             header.append("\n\t@Pattern(regexp = \""+validatorRegex+"\", message = \"{"+ className + "." + attributeName + ".pattern}\")");
         }
         if(isEntityClass && relationShip != null) header.append("\n\t" + relationShip.name);
+
+        if(isEntityClass && type == AttributeType.BLOB) header.append("\n\t@Lob");
+        if(isEntityClass && type == AttributeType.CLOB) header.append("\n\t@Lob\n" +
+                "    @Type(type = \"text\")");
         attributeVariables.put("attributeJavaHeader",header.toString());
 
         return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
@@ -328,10 +332,10 @@ public class AttributeTemplate {
             return "attribute.form.input.number";
         }
         if(type == AttributeType.DATE){
-            return "attribute.form.input.date";//@TODO correct input
+            return "attribute.form.input.date";
         }
         if(type == AttributeType.TIME){
-            return "attribute.form.input.time";//@TODO correct input
+            return "attribute.form.input.time";
         }
         if(type == AttributeType.DATETIME){
             return "attribute.form.input.dateTime";//@TODO correct input
@@ -367,6 +371,8 @@ public class AttributeTemplate {
             case TIME: sb.append(", ");  sb.append(TestDataHelper.getInstance().getRandomLocalTime()); break;
             case ENUM: sb.append(", ");  sb.append(settings.getRandomEnumValue(classTypeName)); break;
             case CLASS: sb.append(", ");  sb.append(dependantBeanName); break;
+            case CLOB: sb.append(", "); sb.append("\""); sb.append(getStringAttributeValue(valid)); sb.append("\""); break;
+            case BLOB: sb.append(", "); sb.append("\""); sb.append(getStringAttributeValue(valid)); sb.append("\""); break;
 
         }
     }

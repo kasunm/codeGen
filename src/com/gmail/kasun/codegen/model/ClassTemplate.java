@@ -21,6 +21,8 @@ public class ClassTemplate {
     public String classDescription;
 
     public String classURL;
+    public String inheritedClassName;
+    public boolean hasChildren;
     public String idAttributeName;
     public List <AttributeTemplate> attributes;
     public List <SearchOption> searchOptions;
@@ -90,10 +92,11 @@ public class ClassTemplate {
 
 
 
-    public String getMappedAttributeNames( String mainAttributeName, String callingClassName, String expectedAttributeNames) throws Exception{
+
+    public String getMappedAttributeNames(Settings settings, String mainAttributeName, String callingClassName, String expectedAttributeNames) throws Exception{
         StringBuilder attributeText = new StringBuilder(1000);
         if(attributes == null) return "";
-        if(expectedAttributeNames.contains("id")){
+        if(!StringUtils.isEmpty(inheritedClassName) && inheritedClassName.length() > 1 && expectedAttributeNames.contains("id")){
             attributeText.append("\t@NotNull\n   private Long " + mainAttributeName + "Id;\n");
         }
         for(AttributeTemplate template: attributes){
@@ -101,6 +104,10 @@ public class ClassTemplate {
                 attributeText.append(template.getJavaAttribute(null, false, this.className, mainAttributeName, false));
                 attributeText.append("\n");
             }
+        }
+        if(!StringUtils.isEmpty(inheritedClassName) && inheritedClassName.length() > 1){
+            attributeText.append(settings.getMappedAttributeNames(inheritedClassName, callingClassName, mainAttributeName, expectedAttributeNames));
+            attributeText.append("\n");
         }
         return attributeText.toString();
     }
@@ -113,6 +120,29 @@ public class ClassTemplate {
     public void addClassTemplateVariables(Settings settings, Map<String,String> variables, boolean isEntity) throws Exception{
         MiscUtils.addClassStringAttributes(this, variables);
         variables.put("classAttributes", getAttributeNames(settings, isEntity));
+        variables.put("specialAnnotation", " ");
+        variables.put("inheritedClassName", " ");
+        variables.put("inheritedDTOName", " ");
+        if(!StringUtils.isEmpty(inheritedClassName)){
+            variables.put("inheritedClassName", " extends " + inheritedClassName);
+            variables.put("inheritedDTOName", " extends " + inheritedClassName + "DTO ");
+            variables.put("specialAnnotation", "@DiscriminatorValue(\""+ className +"\") ");
+            variables.put("idDeclaration", " ");
+
+        }else if(isEntity){
+            variables.put("idDeclaration", "@GeneratedValue(strategy = GenerationType.IDENTITY)\n" +
+                    "    @Id\n" +
+                    "    private Long id; ");
+
+        }else {
+            variables.put("idDeclaration", "@NotNull\n" +
+                    "    private Long id;");
+        }
+        if(hasChildren){
+            variables.put("specialAnnotation", "@Inheritance(strategy = InheritanceType.SINGLE_TABLE)\n" +
+                    "@DiscriminatorColumn(name = \""+ classVariableName +"\") ");
+        }
+
         //  Add test data
         variables.put("beanID0", getBeanInstance(settings, "0L", true));
         variables.put("beanID01", getBeanInstance(settings, "0L", true));
@@ -365,14 +395,18 @@ public class ClassTemplate {
         if(attributes == null) return "";
 
         StringBuilder sb = new StringBuilder(300);
-        if(expectedAttributeNames.contains("id")){
+        if(expectedAttributeNames.contains(",id,") && !hasChildren){
             sb.append(" public " + mainAttributeName + "Id ?: number");
         }
         for(AttributeTemplate attribute: attributes){
             if(!attribute.includeInDTO) continue;
-            sb.append(", ");
-            sb.append(attribute.getAngularAttribute(settings, this.className, mainAttributeName));
+           if(expectedAttributeNames.contains("," + attribute.attributeName +  ",")){
+               sb.append(", ");
+               sb.append(attribute.getAngularAttribute(settings, this.className, mainAttributeName));
+           }
+
         }
+
         return sb.toString();
     }
 
@@ -382,8 +416,10 @@ public class ClassTemplate {
         int count = 0;
         for(AttributeTemplate attribute: attributes){
             if(!attribute.includeInDTO) continue;
-            if(count++ > 0) sb.append(" + ', ' + ");
-            if(StringUtils.isEmpty(attribute.relationShipDTOAttributes)) sb.append("'"+attribute.attributeName+":' + this."+attribute.attributeName+"" );
+            if(StringUtils.isEmpty(attribute.relationShipDTOAttributes)){
+                if(count++ > 0) sb.append(" + ', ' + ");
+                sb.append("'"+attribute.attributeName+":' + this."+attribute.attributeName+"" );
+            }
         }
         return sb.toString();
     }
@@ -436,6 +472,9 @@ public class ClassTemplate {
             if(!StringUtils.isEmpty(attribute.relationShipDTOAttributes)){
                 attribute.derivedAttributes = settings.getDerivedAttributeNames(attribute.classTypeName, attribute.relationShipDTOAttributes, attribute.attributeName);
             }
+        }
+        if(!StringUtils.isEmpty(inheritedClassName) && inheritedClassName.length() > 1){
+            attributes.addAll(settings.getClassAttributes(inheritedClassName));
         }
     }
 

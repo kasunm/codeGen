@@ -153,9 +153,16 @@ public class Settings {
 
     public String getMappedAttributeNames( String className, String callingClassName, String mainAttributeName, String expectedAttributeNames) throws Exception{
         for(ClassTemplate classTemplate: classes){
-            if(classTemplate.className.equals(className)) return classTemplate.getMappedAttributeNames( mainAttributeName, callingClassName, expectedAttributeNames);
+            if(classTemplate.className.equals(className)) return classTemplate.getMappedAttributeNames(this, mainAttributeName, callingClassName, expectedAttributeNames);
         }
         return " ";
+    }
+
+    public  List<AttributeTemplate> getClassAttributes(String className){
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate.attributes;
+        }
+        return null;
     }
 
     public String getBeanInstance(String className,  String id, boolean valid){
