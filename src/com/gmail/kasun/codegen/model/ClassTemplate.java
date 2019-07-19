@@ -43,6 +43,18 @@ public class ClassTemplate {
         initDerivedVariables(className);
     }
 
+    public String getDependantClassNames(){
+        StringBuilder sb = new StringBuilder(1000);
+        sb.append(",");
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                sb.append(attributeTemplate.classTypeName);
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
+
     public String getClassNameDisplay() {
         return classNameDisplay;
     }
@@ -66,6 +78,23 @@ public class ClassTemplate {
         }
         return attributeText.toString();
     }
+
+    //dtoMapping
+    public void addJavaDependantMapping(StringBuilder attributeText, StringBuilder constructor, StringBuilder constructorAssign, StringBuilder variable){
+        if(attributes == null) return ;
+        for(AttributeTemplate template: attributes){
+            if(StringUtils.isEmpty(template.relationShipDTOAttributes) || !template.includeInDTO) continue;
+            attributeText.append("\t\tif(" + classVariableName + "DTO.get" + StringUtils.capitalize(template.attributeName) + "Id() != null && " + classVariableName + "DTO.get" + StringUtils.capitalize(template.attributeName) + "Id() > 0){\n" +
+                    "            " + classVariableName + ".set" + StringUtils.capitalize(template.attributeName) + "( " + template.attributeName + "Service.getByID(" + classVariableName + "DTO.get" + StringUtils.capitalize(template.attributeName) + "Id()).get());\n" +
+                    "        }");
+            attributeText.append("\n");
+            constructor.append(", " + template.classTypeName + "Service " +template.attributeName+ "Service");
+            constructorAssign.append("\t\tthis." +template.attributeName+ "Service = " + template.attributeName+ "Service;\n");
+            variable.append("\tprivate final "+ template.classTypeName +"Service " + template.attributeName + "Service;\n");
+        }
+    }
+
+
 
     public void addSearchAttributeNames(Settings settings, String matchingAttributes, StringBuilder attributeDeclarations, StringBuilder attributeParameters, StringBuilder attributeValidations) throws Exception{
         if(attributes == null) return ;
@@ -153,6 +182,15 @@ public class ClassTemplate {
         variables.put("beanID4", getBeanInstance(settings, "4L", false));
         variables.put("beanID5", getBeanInstance(settings, "5L", true));
         variables.put("beanFailValidation", getBeanInstance(settings, "6L", false));
+        StringBuilder dtoMapping = new StringBuilder(1000);
+        StringBuilder constructorMapping = new StringBuilder(1000);
+        StringBuilder constructorAssign = new StringBuilder(1000);
+        StringBuilder variableMapping = new StringBuilder(1000);
+        addJavaDependantMapping(dtoMapping, constructorMapping, constructorAssign, variableMapping);
+        variables.put("dtoMapping", dtoMapping.toString());
+        variables.put("dependantConstructorService", constructorMapping.toString());
+        variables.put("dependantVariableService", variableMapping.toString());
+        variables.put("dependantConstructorAssign", constructorAssign.toString());
 
         //Add dependant class instance
         StringBuilder dependantBeans = new StringBuilder(2000);
@@ -337,10 +375,11 @@ public class ClassTemplate {
             if(!attribute.includeInDTO) continue;
             if(attribute.derivedAttributes != null && attribute.derivedAttributes.size() > 0){
                 for(AttributeTemplate derived: attribute.derivedAttributes){
-                    derived.addAttributeFormElementHTML(props, sb);
+                    if(derived.attributeName.endsWith("Id")) continue;
+                    derived.addAttributeFormElementHTML(props, sb, attribute);
                 }
             } else {
-                attribute.addAttributeFormElementHTML(props, sb);
+                attribute.addAttributeFormElementHTML(props, sb, null);
             }
 
         }
@@ -367,6 +406,77 @@ public class ClassTemplate {
         }
         return validators.toString();
     }
+
+    public String getAngularDependantObjectList(){
+        StringBuilder inits = new StringBuilder(2500);
+        int count = attributes.size();
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(!attributeTemplate.includeInDTO) continue;
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                inits.append("public " + StringUtils.uncapitalize(attributeTemplate.classTypeName) + "s: Array<" + attributeTemplate.classTypeName +">;\n" );
+            }
+        }
+        return inits.toString();
+    }
+
+    public String getAngularDependantServices(){
+        StringBuilder inits = new StringBuilder(2500);
+        int count = attributes.size();
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(!attributeTemplate.includeInDTO) continue;
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                if(count++ > 0) inits.append(", ");
+                inits.append("private " + StringUtils.uncapitalize(attributeTemplate.classTypeName) + "Service: " + attributeTemplate.classTypeName + "Service");
+            }
+        }
+        return inits.toString();
+    }
+
+    public String getAngularDependantListLoads(){
+        StringBuilder inits = new StringBuilder(2500);
+        int count = attributes.size();
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(!attributeTemplate.includeInDTO) continue;
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                inits.append("this." + StringUtils.uncapitalize(attributeTemplate.classTypeName) + "Service.fetchAll" + attributeTemplate.classTypeName + "s().subscribe( data => this."+ StringUtils.uncapitalize(attributeTemplate.classTypeName) + "s = data, error1 => this.errorMessage = error1);\n");
+            }
+        }
+        return inits.toString();
+    }
+
+    public String getAngularDependantValueSets(){
+        StringBuilder inits = new StringBuilder(2500);
+
+        int count = attributes.size();
+        for(AttributeTemplate attributeTemplate: attributes){
+            if(!attributeTemplate.includeInDTO) continue;
+            if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
+                inits.append("\nget all" + attributeTemplate.classTypeName + "s() {\n" +
+                        "    return this."+StringUtils.uncapitalize(attributeTemplate.classTypeName)+"s;\n" +
+                        "    }\n");
+                inits.append(" set" + StringUtils.capitalize(attributeTemplate.attributeName) + "Id(id: number");
+                for(AttributeTemplate derived: attributeTemplate.derivedAttributes){
+                    if(derived.attributeName.toLowerCase().contains("id")) continue;
+                    inits.append(", ");
+                    inits.append(derived.getPlainAngularAttribute("","", false).replaceAll("public", ""));
+                }
+                inits.append(") {\n");
+                 inits.append("    this."+ classVariableName +"."+ attributeTemplate.attributeName +"Id = id;\n");
+                for(AttributeTemplate derived: attributeTemplate.derivedAttributes){
+
+                    inits.append("\n\t");
+                    inits.append("this." + derived.attributeName);
+                    if(derived.attributeName.toLowerCase().contains("id")) inits.append(".setValue(id); ");
+                    else inits.append(".setValue(" + derived.attributeName + "); ");
+                }
+                inits.append("\n}\n");
+            }
+        }
+        return inits.toString();
+    }
+
+
+
 
     public String getAngularConstructor(Settings settings){
         StringBuilder sb = new StringBuilder(300);

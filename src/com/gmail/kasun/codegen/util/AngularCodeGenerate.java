@@ -38,8 +38,8 @@ public class AngularCodeGenerate {
     }
 
     public void generateCode(Settings settings) throws Exception{
-        generateFixedFiles(settings);
-        generateDynamicClasses(settings);
+//        generateFixedFiles(settings);
+//        generateDynamicClasses(settings);
     }
 
     /** ------------- Supportive private methods  ------------- **/
@@ -61,10 +61,13 @@ public class AngularCodeGenerate {
         projectSettings.put("app.links", getForEachClass(getTag("app.link"), settings)); //Add All class links
 
         TemplateUtils.getInstance().generateFixedFile(settings, "app.component.html",   settings.getAngularPackageRoot() , projectSettings);
-        projectSettings.put("model.class.import", settings.getRepeatedTemplateReplacedValue(getTag("model.class.import"), ""));
+        projectSettings.put("model.class.import", settings.getRepeatedTemplateReplacedValue(getTag("model.class.import"), "", null));
         projectSettings.put("model.class.names", settings.getDeclarationClassNames());
         TemplateUtils.getInstance().generateFixedFile(settings, "app.module.ts",   settings.getAngularPackageRoot() , projectSettings);
-        projectSettings.put("model.class.route", settings.getRepeatedTemplateReplacedValue(getTag("model.class.route"), getTag("model.class.firstRoute")));
+        projectSettings.put("model.class.route", settings.getRepeatedTemplateReplacedValue(getTag("model.class.route"), getTag("model.class.firstRoute"), null));
+
+
+
         TemplateUtils.getInstance().generateFixedFile(settings, "app-routing.module.ts",   settings.getAngularPackageRoot() , projectSettings);
 
 
@@ -89,7 +92,15 @@ public class AngularCodeGenerate {
             classSettings.put("attributesComma", template.getAngularConstructor(settings));
             classSettings.put("attributesToString", template.getToString());
             classSettings.put("enumImports", template.getEnumImports());
+            classSettings.put("dependantObjectList", template.getAngularDependantObjectList());
+            classSettings.put("dependantServices", template.getAngularDependantServices());
+            classSettings.put("dependantListLoad", template.getAngularDependantListLoads());
+            classSettings.put("dependantValuesSet", template.getAngularDependantValueSets());
             classSettings.put("detail.class.enumCollection", template.getEnumKeys(getTag("detail.class.enumCollection")));
+            if(template.getDependantClassNames().length() > 2)
+                classSettings.put("model.dependant.import", settings.getRepeatedTemplateReplacedValue(getTag("model.dependant.import"), "", template.getDependantClassNames()));
+            else  classSettings.put("model.dependant.import", " ");
+
 
             //Model
             String templateText = TemplateUtils.getInstance().readTemplateFile("class.ts", false);

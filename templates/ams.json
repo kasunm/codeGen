@@ -487,7 +487,7 @@
           "collectionType":"None",
           "required":false,
           "showOnGrid":false,
-          "relationShipDTOAttributes":"id,firstName,lastName",
+          "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         },{
           "attributeName":"employee",
@@ -497,7 +497,7 @@
           "collectionType":"None",
           "required":false,
           "showOnGrid":false,
-          "relationShipDTOAttributes":"id,firstName,lastName",
+          "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         }
       ]
@@ -672,7 +672,7 @@
           "collectionType":"None",
           "required":false,
           "showOnGrid":false,
-          "relationShipDTOAttributes":"id,firstName,lastName",
+          "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         },{
           "attributeName":"employee",
@@ -682,7 +682,7 @@
           "collectionType":"None",
           "required":false,
           "showOnGrid":false,
-          "relationShipDTOAttributes":"id,firstName,lastName",
+          "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         }
       ]
@@ -769,7 +769,7 @@
           "collectionType": "None",
           "required": false,
           "showOnGrid": false,
-          "relationShipDTOAttributes": "id,firstName,lastName",
+          "relationShipDTOAttributes": "id,firstName",
           "includeInDTO": true
         },
         {
@@ -780,7 +780,7 @@
           "collectionType": "None",
           "required": false,
           "showOnGrid": false,
-          "relationShipDTOAttributes": "id,firstName,lastName",
+          "relationShipDTOAttributes": "id,firstName",
           "includeInDTO": true
         }
       ]
@@ -951,7 +951,7 @@
           "collectionType":"None",
           "required":false,
           "showOnGrid":false,
-          "relationShipDTOAttributes":"id,firstName,lastName",
+          "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         },
         {

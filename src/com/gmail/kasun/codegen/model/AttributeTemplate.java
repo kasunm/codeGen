@@ -229,10 +229,7 @@ public class AttributeTemplate {
         }
 
         if(StringUtils.isEmpty(parentAttributeName)){
-            return "public " + attributeName +  "?: "
-                    + ((collectionType == null || collectionType == CollectionType.None) ?
-                    getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
-            );
+            return getPlainAngularAttribute("","", true);
         }else {
             return "public " + parentAttributeName + StringUtils.capitalize(attributeName) +  "?: "
                     + ((collectionType == null || collectionType == CollectionType.None) ?
@@ -243,6 +240,13 @@ public class AttributeTemplate {
 
 
 
+    }
+
+    public String getPlainAngularAttribute(String prefix, String postfix, boolean optional) {
+        return "public " + prefix + attributeName + postfix + (optional ? "?: ": ": ")
+                + ((collectionType == null || collectionType == CollectionType.None) ?
+                getAngularName() : collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType)
+        );
     }
 
     private String getAngularName() {
@@ -304,7 +308,7 @@ public class AttributeTemplate {
         sb.append("]");//Close form group element
     }
 
-    public void addAttributeFormElementHTML(Properties prop, StringBuilder sb){
+    public void addAttributeFormElementHTML(Properties prop, StringBuilder sb, AttributeTemplate parent){
         Map<String,String> attributeVariables = new HashMap<String,String>();
         attributeVariables.put("attributeName",attributeName);
         attributeVariables.put("attributeDisplayName",getDisplayName());
@@ -314,8 +318,33 @@ public class AttributeTemplate {
             attributeVariables.put("enumVariableName", StringUtils.uncapitalize(classTypeName));
         }
 
-        sb.append(TemplateUtils.getInstance().replaceVariables(prop.getProperty(getFormComponentName()), attributeVariables));
+        if(parent != null){
+            sb.append("<div class=\"form-group\">\n" +
+                    "<label>" + MiscUtils.splitCamelCase(StringUtils.capitalize(attributeName), " ") + " &nbsp;</label>\n" +
+                    "      <div class=\"btn-group\" dropdown>\n" +
+                    "\n" +
+                    "        <button dropdownToggle type=\"button\" class=\"btn btn-outline-secondary dropdown-toggle\"\n" +
+                    "                aria-controls=\"dropdown-basic-"+ attributeName +"\" [class.is-invalid]=\"" + attributeName + ".invalid && " + attributeName + ".touched\"  type=\"text\"  name=\"" + attributeName + "\" id=\"" + attributeName + "\" placeholder=\"" + attributeName + "\">\n" +
+                    "          {{" + attributeName + ".value || 'Select a " + attributeName + "'}} <span class=\"caret\"></span>\n" +
+                    "        </button>\n" +
+                    "        <ul id=\"dropdown-basic-"+ attributeName +"\" *dropdownMenu class=\"dropdown-menu\"\n" +
+                    "            role=\"menu\" aria-labelledby=\"button-basic\"  >\n" +
+                    "          <ng-container *ngFor=\"let " + StringUtils.uncapitalize(parent.classTypeName) + " of this.all" + parent.classTypeName + "s\">\n" +
+                    "            <li role=\"menuitem\" class=\"dropdown-item\" (click)=\"set"+ StringUtils.capitalize(parent.attributeName)+"Id(" + StringUtils.uncapitalize(parent.classTypeName) + ".id, "
+                    + StringUtils.uncapitalize(parent.classTypeName) + "." + extractOriginalAttributeName(parent) + ")\" value=\"{{"+StringUtils.uncapitalize(parent.classTypeName)+".id}}\">{{"+StringUtils.uncapitalize(parent.classTypeName)+"."+extractOriginalAttributeName(parent)+"}}</li>\n" +
+                    "          </ng-container>\n" +
+                    "        </ul>\n" +
+                    "       <small class=\"text-danger\" *ngIf=\"" + attributeName + ".invalid  && " + attributeName + ".touched\">Error</small>\n" +
+                    "      </div>\n" +
+                    "</div>");
+        }else {
+            sb.append(TemplateUtils.getInstance().replaceVariables(prop.getProperty(getFormComponentName()), attributeVariables));
+        }
         sb.append("\n");
+    }
+
+    private String extractOriginalAttributeName(AttributeTemplate parent) {
+        return StringUtils.uncapitalize(attributeName.replaceAll(parent.attributeName, ""));
     }
 
     /**

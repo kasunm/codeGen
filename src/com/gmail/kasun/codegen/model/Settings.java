@@ -120,10 +120,11 @@ public class Settings {
         return angularProjectBasePath + File.separator+ angularProjectName + File.separator + "src" + File.separator + "app";
     }
 
-    public String getRepeatedTemplateReplacedValue(String partialTemplate, String firstItemTemplate){
+    public String getRepeatedTemplateReplacedValue(String partialTemplate, String firstItemTemplate, String matchingClasses){
         StringBuilder sb = new StringBuilder(500);
         int count = 0;
         for(ClassTemplate classTemplate: classes){
+            if(!StringUtils.isEmpty(matchingClasses) && !matchingClasses.contains(classTemplate.className)) continue;
             Map<String,String> map = getProjectSettings();
             MiscUtils.addClassStringAttributes(classTemplate, map);
             if(count ++ < 1 && !StringUtils.isEmpty(firstItemTemplate)) sb.append(TemplateUtils.getInstance().replaceVariables(firstItemTemplate,map));

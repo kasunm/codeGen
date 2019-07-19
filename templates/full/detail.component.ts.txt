@@ -2,8 +2,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {${className}} from './${classFileAngular}';
 import {${className}Service} from './${classFileAngular}.service';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 ${enumImports}
+${model.dependant.import}
 
 
 @Component({
@@ -15,9 +17,11 @@ export class ${className}DetailComponent implements OnInit {
   ${classVariableName}DetailForm: FormGroup;
   ${classVariableName}: ${className} = new ${className}();
   ${detail.class.enumCollection}
+  ${dependantObjectList}
+  private errorMessage: HttpErrorResponse;
 
 
-  constructor( private fb: FormBuilder, private ${classVariableName}Service: ${className}Service, private  route: ActivatedRoute, private  router: Router) { }
+  constructor( private fb: FormBuilder, private ${classVariableName}Service: ${className}Service  ${dependantServices}, private  route: ActivatedRoute, private  router: Router) { }
 
   ngOnInit() {
 
@@ -41,6 +45,8 @@ export class ${className}DetailComponent implements OnInit {
       //Add new or id not passed. Consider id: 0
       this.${classVariableName} = new ${className}(0);
     }
+
+    ${dependantListLoad}
   }
 
   ${attribute.validator.get}
@@ -61,6 +67,8 @@ export class ${className}DetailComponent implements OnInit {
         this.${classVariableName}DetailForm.patchValue(this.${classVariableName});
       }
     }
+
+    ${dependantValuesSet}
 
 
 }

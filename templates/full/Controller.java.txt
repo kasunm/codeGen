@@ -1,9 +1,9 @@
 package ${javaPackage}.controller;
 
 import ${javaPackage}.model.dto.${className}DTO;
-import ${javaPackage}.model.entity.${className};
+import ${javaPackage}.model.entity.*;
 import ${javaPackage}.model.enums.*;
-import ${javaPackage}.service.${className}Service;
+import ${javaPackage}.service.*;
 import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
@@ -44,9 +44,12 @@ public class ${className}Controller {
     private final ModelMapper modelMapper = new ModelMapper();
     private final Logger logger = LoggerFactory.getLogger(${className}Controller.class);
 
-    public ${className}Controller(${className}Service ${classVariableName}Service){
+${dependantVariableService}
+
+    public ${className}Controller(${className}Service ${classVariableName}Service ${dependantConstructorService}){
         this.${classVariableName}Service = ${classVariableName}Service;
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+${dependantConstructorAssign}
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
     }
 
     /** ------------- Main service method ------------- */
@@ -135,6 +138,7 @@ ${controllerSearch}
     }
 
     private ${className} copyTo${className}(${className}DTO ${classVariableName}DTO, ${className} ${classVariableName}){
+${dtoMapping}
          modelMapper.map(${classVariableName}DTO, ${classVariableName});
           return ${classVariableName};
     }
