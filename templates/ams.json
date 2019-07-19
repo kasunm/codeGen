@@ -3,7 +3,7 @@
   "javaPackage":"lk.empire.ams",
   "javaProjectBasePath":"F:/Develpment/Ams",
   "projectDescription":"Apartment management system for empire apartments",
-  "angularProjectName":"AmsUI",
+  "angularProjectName":"AMSUI",
   "angularProjectBasePath":"F:/Develpment/Ams",
   "dbName":"ams",
   "dbUserName":"appartmentadmin",
@@ -53,7 +53,7 @@
 
         {
           "attributeName":"events",
-          "classTypeName":"Event",
+          "classTypeName":"AppEvent",
           "type":"CLASS",
           "collectionType":"List",
           "relationShip":"OneToMany",
@@ -143,7 +143,7 @@
         },
         {
           "attributeName":"events",
-          "classTypeName":"Event",
+          "classTypeName":"AppEvent",
           "type":"CLASS",
           "collectionType":"List",
           "relationShip":"OneToMany",
@@ -306,7 +306,7 @@
       "attributes":[
         {
           "attributeName":"empEventList",
-          "classTypeName":"Event",
+          "classTypeName":"AppEvent",
           "type":"CLASS",
           "collectionType":"List",
           "relationShip":"OneToMany",
@@ -378,13 +378,13 @@
     },
 
     {
-      "className":"Event",
-      "classDescription":"An Event of apartment",
+      "className":"AppEvent",
+      "classDescription":"An event of apartment",
       "classURL":"events",
       "idAttributeName":"id",
-      "classNameDisplay":"Event",
-      "classFileAngular":"event",
-      "classVariableName":"event",
+      "classNameDisplay":"AppEvent",
+      "classFileAngular":"app-event",
+      "classVariableName":"appEvent",
       "attributes":[
         {
           "attributeName":"name",
@@ -397,7 +397,7 @@
           "includeInDTO":true
         },
         {
-          "attributeName":"repeat",
+          "attributeName":"repeatInterval",
           "type":"LONG",
           "collectionType":"None",
           "required":false,

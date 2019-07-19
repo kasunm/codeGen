@@ -96,7 +96,7 @@ public class ClassTemplate {
     public String getMappedAttributeNames(Settings settings, String mainAttributeName, String callingClassName, String expectedAttributeNames) throws Exception{
         StringBuilder attributeText = new StringBuilder(1000);
         if(attributes == null) return "";
-        if(!StringUtils.isEmpty(inheritedClassName) && inheritedClassName.length() > 1 && expectedAttributeNames.contains("id")){
+        if(StringUtils.isEmpty(inheritedClassName) && expectedAttributeNames.contains("id")){
             attributeText.append("\t@NotNull\n   private Long " + mainAttributeName + "Id;\n");
         }
         for(AttributeTemplate template: attributes){
@@ -135,8 +135,7 @@ public class ClassTemplate {
                     "    private Long id; ");
 
         }else {
-            variables.put("idDeclaration", "@NotNull\n" +
-                    "    private Long id;");
+            variables.put("idDeclaration", "private Long id;");
         }
         if(hasChildren){
             variables.put("specialAnnotation", "@Inheritance(strategy = InheritanceType.SINGLE_TABLE)\n" +
@@ -292,6 +291,7 @@ public class ClassTemplate {
         StringBuilder sb = new StringBuilder(300);
         int count = 0;
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if(StringUtils.isEmpty(attribute.relationShipDTOAttributes))  count = addToAngularAttribute(partialTemplateText, enumSpecialTemplate, showInGrid, sb, count, attribute);
             else {
                  for(AttributeTemplate derived: attribute.derivedAttributes){
@@ -334,6 +334,7 @@ public class ClassTemplate {
     public String getAttributeFormElementHTML(Properties props){
         StringBuilder sb = new StringBuilder(3000);
         for(AttributeTemplate attribute: attributes){
+            if(!attribute.includeInDTO) continue;
             if(attribute.derivedAttributes != null && attribute.derivedAttributes.size() > 0){
                 for(AttributeTemplate derived: attribute.derivedAttributes){
                     derived.addAttributeFormElementHTML(props, sb);
@@ -350,6 +351,7 @@ public class ClassTemplate {
         StringBuilder validators = new StringBuilder(2500);
         int count = attributes.size();
         for(AttributeTemplate attributeTemplate: attributes){
+            if(!attributeTemplate.includeInDTO) continue;
             if(attributeTemplate.derivedAttributes != null && attributeTemplate.derivedAttributes.size() > 0){
                 for(AttributeTemplate derived: attributeTemplate.derivedAttributes){
                     count += attributeTemplate.derivedAttributes.size();

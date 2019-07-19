@@ -63,7 +63,7 @@ public class MiscUtils {
 
     public static void createAngularProject(String baseDirectory, String name){
         MiscUtils.executeShellCommand("ng new " + name + " --style=scss --routing=true", baseDirectory);
-        MiscUtils.executeShellCommand("npm install --save angular-bootstrap-datetimepicker @ng-bootstrap/ng-bootstrap bootstrap moment open-iconic" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install --save ngx-bootstrap bootstrap moment open-iconic jquery popper" , baseDirectory + File.separator + name);
         //MiscUtils.executeShellCommand("npm install --save jquery" , baseDirectory + File.separator + name);
         //MiscUtils.executeShellCommand("npm install --save  popper.js" , baseDirectory + File.separator + name);
         MiscUtils.executeShellCommand("ng add ngx-bootstrap" , baseDirectory + File.separator + name);
