@@ -38,8 +38,8 @@ public class AngularCodeGenerate {
     }
 
     public void generateCode(Settings settings) throws Exception{
-//        generateFixedFiles(settings);
-//        generateDynamicClasses(settings);
+        generateFixedFiles(settings);
+        generateDynamicClasses(settings);
     }
 
     /** ------------- Supportive private methods  ------------- **/
