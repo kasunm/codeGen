@@ -3,6 +3,7 @@ import {${className}} from './${classFileAngular}';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+${enumImports}
 
 
 @Injectable({
@@ -50,6 +51,8 @@ export class ${className}Service {
   public delete${className}ById(id: number): Observable<number> {
     return this.http.delete<number>(this.url + '/' + id);
   }
+
+  ${angularServiceSearch}
 
 
 }

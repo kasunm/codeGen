@@ -99,6 +99,7 @@ public class ClassTemplate {
     public void addSearchAttributeNames(Settings settings, String matchingAttributes, StringBuilder attributeDeclarations, StringBuilder attributeParameters, StringBuilder attributeValidations) throws Exception{
         if(attributes == null) return ;
         int count = 0;
+
         for(AttributeTemplate template: attributes){
             if(matchingAttributes.contains(template.attributeName)){ //@TODO in future support derived attributes
                 Map<String,String> attributeVariables = new HashMap<String,String>();
@@ -106,17 +107,79 @@ public class ClassTemplate {
                     attributeDeclarations.append(", ");
                     attributeParameters.append("\n");
                 }
+                if(template.relationShip != null && (template.relationShip == RelationShip.ManyToOne || template.relationShip == RelationShip.OneToOne)){
+                    if(matchingAttributes.contains(template.attributeName)){
+                        attributeVariables.put("type", "Long");
+                        attributeVariables.put("attributeName", template.attributeName );
+                        attributeDeclarations.append(attributeVariables.get("type") + " " + attributeVariables.get("attributeName"));
+                        attributeParameters.append("     * @param " + attributeVariables.get("attributeName") + " " + attributeVariables.get("type"));
+                        attributeValidations.append("\t\tAssert.notNull(" +template.attributeName + ", \"Expects a valid "+ template.attributeName +"\");\n");
+                        attributeValidations.append( "\t\tAssert.isTrue(" + template.attributeName + " > 0, \"Expects a valid "+ template.attributeName +" > 0\");\n");
 
-                template.getJavaAttribute(settings, false, className, "", true, attributeVariables);
-                attributeDeclarations.append(attributeVariables.get("type") + " " + attributeVariables.get("attributeName"));
-                attributeParameters.append("     * @param " + attributeVariables.get("attributeName") + " " + attributeVariables.get("type"));
-                attributeValidations.append("\t\tAssert.notNull(" +template.attributeName + ", \"Expects a valid "+ template.attributeName +"\");\n");
-                if(template.type == AttributeType.INT || template.type == AttributeType.LONG || template.type == AttributeType.DOUBLE){
-                    attributeValidations.append( "\t\tAssert.isTrue(" + template.attributeName + " > 0, \"Expects a valid "+ template.attributeName +" > 0\");\n");
+                    }
+                }else{
+                    template.getJavaAttribute(settings, false, className, "", true, attributeVariables);
+
+                    attributeDeclarations.append(attributeVariables.get("type") + " " + attributeVariables.get("attributeName"));
+                    attributeParameters.append("     * @param " + attributeVariables.get("attributeName") + " " + attributeVariables.get("type"));
+                    attributeValidations.append("\t\tAssert.notNull(" +template.attributeName + ", \"Expects a valid "+ template.attributeName +"\");\n");
+                    if(template.type == AttributeType.INT || template.type == AttributeType.LONG || template.type == AttributeType.DOUBLE){
+                        attributeValidations.append( "\t\tAssert.isTrue(" + template.attributeName + " > 0, \"Expects a valid "+ template.attributeName +" > 0\");\n");
+                    }
                 }
-
             }
         }
+
+        if(StringUtils.isEmpty(inheritedClassName)) return;
+        settings.getClass(inheritedClassName).addSearchAttributeNames(settings, matchingAttributes, attributeDeclarations, attributeParameters, attributeValidations);
+    }
+
+    //@TODO finish angular code generator
+    public void addSearchAttributeNamesAngular(Settings settings, String matchingAttributes, StringBuilder argsAngular, StringBuilder argNamesAngular,  StringBuilder argsValid) throws Exception{
+        if(attributes == null) return ;
+        int count = 0;
+
+        for(AttributeTemplate template: attributes){
+            if(matchingAttributes.contains(template.attributeName)){ //@TODO in future support derived attributes
+                Map<String,String> attributeVariables = new HashMap<String,String>();
+                if(count ++ > 0){
+                    argsAngular.append(", ");
+                    argNamesAngular.append(", ");
+                    argsValid.append(" && ");
+                }
+                if(template.relationShip != null && (template.relationShip == RelationShip.ManyToOne || template.relationShip == RelationShip.OneToOne)){
+                    if(matchingAttributes.contains(template.attributeName)){
+                        attributeVariables.put("type", "number");
+                        attributeVariables.put("attributeName", template.attributeName );
+                        argsAngular.append(attributeVariables.get("attributeName") + ": " +  attributeVariables.get("type")  );
+
+                        argsValid.append(attributeVariables.get("attributeName") + " && " + attributeVariables.get("attributeName") + " > 0");
+                        argNamesAngular.append(attributeVariables.get("attributeName"));
+                    }
+                }else{
+                   // template.getAngularAttribute(settings, false, className, "", true, attributeVariables);
+                    attributeVariables.put("type", template.type.angularName);
+                    attributeVariables.put("attributeName", template.attributeName );
+
+                    argsAngular.append(attributeVariables.get("attributeName") + ": " +  attributeVariables.get("type")  );
+                    argNamesAngular.append(attributeVariables.get("attributeName"));
+                    if(StringUtils.equalsIgnoreCase(attributeVariables.get("type"), AttributeType.INT.angularName)){
+
+                        argsValid.append(attributeVariables.get("attributeName") + " && " + attributeVariables.get("attributeName") + " > 0");
+                    }else if(StringUtils.equalsIgnoreCase(attributeVariables.get("type"), AttributeType.STRING.angularName)){
+
+                        argsValid.append(attributeVariables.get("attributeName") + " && " + attributeVariables.get("attributeName") + ".length > 0 ");
+                    }
+                    else {
+
+                        argsValid.append(attributeVariables.get("attributeName") + " && " + attributeVariables.get("attributeName") + " != null");
+                    }
+                }
+            }
+        }
+
+        //if(StringUtils.isEmpty(inheritedClassName)) return;
+       // settings.getClass(inheritedClassName).addSearchAttributeNamesAngular(settings, matchingAttributes, argsAngular, argNamesAngular,  argsValid);
     }
 
 
@@ -219,6 +282,9 @@ public class ClassTemplate {
             variables.put("serviceInterfaceSearch", " ");
             variables.put("repoSearch", " ");
             variables.put("searchTestRepo", " ");
+            variables.put("angularServiceSearch", " ");
+            variables.put("angularComponentSearch", " ");
+            variables.put("angularHTMLSearch", " ");
             return;
         }
 
@@ -229,18 +295,30 @@ public class ClassTemplate {
         StringBuilder serviceSearch = new StringBuilder(4000);
         StringBuilder repoSearch = new StringBuilder(4000);
         StringBuilder serviceInterfaceSearch = new StringBuilder(4000);
+        StringBuilder angularServiceSearch = new StringBuilder(4000);
+        StringBuilder angularComponentSearch = new StringBuilder(4000);
+        StringBuilder angularHTMLSearch = new StringBuilder(4000);
         controllerSearch.append(" ");
         controllerSearchTest.append(" ");
         serviceSearch.append(" ");
         serviceSearchTest.append(" ");
         repoSearch.append(" ");
         repoSearchTest.append(" ");
-
+        angularServiceSearch.append(" ");
+        angularComponentSearch.append(" ");
+        angularHTMLSearch.append(" ");
+        StringBuilder angualrHTMLSearchItem = new StringBuilder(2000);
         for(SearchOption searchOption: searchOptions){
             StringBuilder params = new StringBuilder(200);
             StringBuilder declare = new StringBuilder(200);
             StringBuilder validation = new StringBuilder(200);
+
+            StringBuilder argsAngular = new StringBuilder(200);
+            StringBuilder argNamesAngular = new StringBuilder(200);
+            StringBuilder argsValidAngular = new StringBuilder(200);
+
             addSearchAttributeNames(settings, "," + searchOption.attributeNames + ",", declare, params, validation);
+            addSearchAttributeNamesAngular(settings, "," + searchOption.attributeNames + ",", argsAngular, argNamesAngular, argsValidAngular);
             Map<String, String> searchVariables = new HashMap<>();
             MiscUtils.addClassStringAttributes(searchOption, searchVariables);
             MiscUtils.addClassStringAttributes(this, searchVariables);
@@ -250,9 +328,24 @@ public class ClassTemplate {
             searchVariables.put("argsValidate", validation.toString());
             searchVariables.put("attributeValues", searchOption.attributeNames.replaceAll(","," + \",\" + "));
             searchVariables.put("searchUrl",  searchOption.searchUrl + "/{" + searchOption.attributeNames.replaceAll(",","}/{") + "}");
+            searchVariables.put("searchUrlReplaced",  "'/" + searchOption.searchUrl + "/' + " + searchOption.attributeNames.replaceAll(","," + '/' + "));
             searchVariables.put("testDataValues", getTestDataValues(searchOption.attributeNames));
             searchVariables.put("anyDataValues", getParamDataValues(searchOption.attributeNames, "any()"));
             searchVariables.put("nullDataValues", getParamDataValues(searchOption.attributeNames, "null"));
+
+            searchVariables.put("argsAngular", argsAngular.toString());
+            searchVariables.put("argNamesAngular", argNamesAngular.toString());
+            searchVariables.put("argNamesAngularURL", argNamesAngular.toString().replaceAll(",", "/"));
+            searchVariables.put("argsValid", argsValidAngular.toString());
+            StringBuilder humanName = new StringBuilder(60);
+
+            searchVariables.put("methodNameHuman", "Search by " + argNamesAngular.toString().replaceAll(",", " "));
+
+            angularComponentSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.angualrListTS, searchVariables));
+            angularComponentSearch.append("\n");
+            angularServiceSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.angularService, searchVariables));
+            angularServiceSearch.append("\n");
+
             controllerSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.controller, searchVariables));
             controllerSearch.append("\n");
             controllerSearchTest.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.controllerTest, searchVariables));
@@ -268,9 +361,12 @@ public class ClassTemplate {
             serviceInterfaceSearch.append("\n");
             repoSearch.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.repo, searchVariables));
             repoSearch.append("\n");
-
+            angualrHTMLSearchItem.append(TemplateUtils.getInstance().replaceVariables(SearchTemplates.angualrHTMLSearchItem, searchVariables));
 
         }
+
+        Map<String, String> htmlSearchVars = new HashMap<>();
+        htmlSearchVars.put("angualrHTMLSearchItem", angualrHTMLSearchItem.toString());
         variables.put("controllerSearch", controllerSearch.toString());
         variables.put("searchTestController", controllerSearchTest.toString());
         variables.put("serviceSearch", serviceSearch.toString());
@@ -278,6 +374,11 @@ public class ClassTemplate {
         variables.put("serviceInterfaceSearch", serviceInterfaceSearch.toString());
         variables.put("repoSearch", repoSearch.toString());
         variables.put("searchTestRepo", " ");
+        variables.put("angualrHTMLSearchItem", angualrHTMLSearchItem.toString());
+        variables.put("angularServiceSearch", angularServiceSearch.toString());
+        variables.put("angularComponentSearch", angularComponentSearch.toString());
+        variables.put("angularHTMLSearch", TemplateUtils.getInstance().replaceVariables(SearchTemplates.angualrHTML, htmlSearchVars));
+
     }
 
     private String getTestDataValues(String commaSeparatedAttributes){

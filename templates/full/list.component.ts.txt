@@ -3,6 +3,7 @@ import {${className}} from './${classFileAngular}';
 import {${className}Service} from './${classFileAngular}.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
+${enumImports}
 
 @Component({
   selector: 'app-${classFileAngular}-list',
@@ -29,7 +30,7 @@ export class ${className}ListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._${classVariableName}Service.fetchAll${className}s().subscribe( data => this._${classVariableName}s = data, error1 => this.errorMessage = error1);
+    //this._${classVariableName}Service.fetchAll${className}s().subscribe( data => this._${classVariableName}s = data, error1 => this.errorMessage = error1);
   }
 
   addNew${className}(){
@@ -51,5 +52,15 @@ export class ${className}ListComponent implements OnInit {
       this.${classVariableName}s.splice(index, 1);
     }
   }
+
+   clear (){
+      this._${classVariableName}s = new Array<${className}>();
+    }
+
+   onSearchAll() {
+      this._${classVariableName}Service.fetchAll${className}s().subscribe( data => this._${classVariableName}s = data, error1 => this.errorMessage = error1);
+    }
+
+    ${angularComponentSearch}
 
 }

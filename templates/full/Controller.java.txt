@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.time.*;
 import java.util.stream.Collectors;
 /**
  * <p>Title         : ${className}Controller
@@ -136,6 +137,16 @@ ${controllerSearch}
     private ${className}DTO convertToDTO(${className} ${classVariableName}){
         return modelMapper.map(${classVariableName}, ${className}DTO.class);
     }
+
+     private List<${className}DTO> getDTOs(List<${className}> ${classVariableName}s){
+           if(${classVariableName}s == null) return null;
+           List<${className}DTO> dtoList = new ArrayList<${className}DTO>(${classVariableName}s.size());
+           for(${className} ${classVariableName}: ${classVariableName}s){
+               ${className}DTO dto = convertToDTO(${classVariableName});
+               dtoList.add(dto);
+           }
+           return dtoList;
+        }
 
     private ${className} copyTo${className}(${className}DTO ${classVariableName}DTO, ${className} ${classVariableName}){
 ${dtoMapping}

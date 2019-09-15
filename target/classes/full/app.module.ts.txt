@@ -6,7 +6,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HttpErrorInterceptor} from './interceptors/http-error.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgModule} from '@angular/core';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
@@ -23,6 +23,7 @@ import { SortableModule } from 'ngx-bootstrap/sortable';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { MatIconModule } from '@angular/material';
 
 
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -39,7 +40,6 @@ ${model.class.import}
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    NgbModule.forRoot(),
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     ButtonsModule.forRoot(),
@@ -57,6 +57,7 @@ ${model.class.import}
     TimepickerModule.forRoot(),
     TooltipModule.forRoot(),
     AppRoutingModule,
+    MatIconModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule

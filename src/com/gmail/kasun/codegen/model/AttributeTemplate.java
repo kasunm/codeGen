@@ -37,6 +37,7 @@ public class AttributeTemplate {
 
 
     public static String javaTemplateText;
+    public static String angularTemplateText = "${attributeName}: ${type} ";
 
     /** -------------- Constructors -------------- **/
 
@@ -165,6 +166,44 @@ public class AttributeTemplate {
         attributeVariables.put("attributeJavaHeader",header.toString());
 
         return TemplateUtils.getInstance().replaceVariables(javaTemplateText, attributeVariables);
+    }
+
+    public String getAngularAttribute(Settings settings, boolean isEntityClass, String className, String parentAttributeName, boolean skipHeader,  Map<String,String> attributeVariables) throws Exception{
+
+
+        if(!isEntityClass && relationShip != null && relationShip != RelationShip.NONE  &&  relationShip != RelationShip.OneToMany
+                &&  relationShip != RelationShip.ManyToMany  && !StringUtils.isEmpty(relationShipDTOAttributes) && StringUtils.isEmpty(parentAttributeName)){
+            //use mapped attributes if specified for DTO for ManyToOne, OneToOne,
+            return settings.getMappedAttributeNames(this.classTypeName, className, attributeName,","+  relationShipDTOAttributes + ",");
+        }
+
+        if(!isEntityClass && !includeInDTO) return " ";
+
+        if(StringUtils.isEmpty(parentAttributeName)) attributeVariables.put("attributeName",attributeName);
+        else attributeVariables.put("attributeName",parentAttributeName + StringUtils.capitalize(attributeName));
+
+
+
+        if(collectionType == null || collectionType == CollectionType.None){
+            if(type == AttributeType.CLASS && !isEntityClass) attributeVariables.put("type", getJavaName() + "DTO");
+            else attributeVariables.put("type", getAngularName());
+        }
+        else {
+            if(type == AttributeType.CLASS && !isEntityClass) attributeVariables.put("type", collectionType.javaName.replaceAll("type", getJavaName()).replaceAll("key", keyType) + "DTO");
+            attributeVariables.put("type", collectionType.angularName.replaceAll("type", getAngularName()).replaceAll("key", keyType));
+        }
+
+
+        //Headers
+        StringBuilder header = new StringBuilder(100);
+        header.append(" ");
+        if(skipHeader) {
+            attributeVariables.put("attributeJavaHeader",header.toString());
+            return TemplateUtils.getInstance().replaceVariables(angularTemplateText, attributeVariables);
+        }
+
+
+        return TemplateUtils.getInstance().replaceVariables(angularTemplateText, attributeVariables);
     }
 
 

@@ -44,7 +44,7 @@ public class CodeGenerator {
             return;
         }
         settings.generateProjectsAndDirectoryStructure();
-        JavaCodeGenerator.getInstance().generateCode(settings);
+       // JavaCodeGenerator.getInstance().generateCode(settings);
         AngularCodeGenerate.getInstance().generateCode(settings);
     }
 

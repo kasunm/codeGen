@@ -2,8 +2,12 @@ package ${javaPackage}.repo;
 
 import ${javaPackage}.model.entity.${className};
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ${javaPackage}.model.enums.*;
+import java.util.List;
+import java.util.Date;
+import java.time.*;
 
 /**
  * <p>Title         : ${className} Repository
@@ -16,5 +20,6 @@ import ${javaPackage}.model.enums.*;
 @Repository
 public interface ${className}Repository extends JpaRepository<${className}, Long> {
 
+${repoSearch}
 
 }

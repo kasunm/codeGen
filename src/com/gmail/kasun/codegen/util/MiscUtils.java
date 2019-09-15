@@ -84,6 +84,10 @@ public class MiscUtils {
         MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component timepicker" , baseDirectory + File.separator + name);
         MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component tooltip" , baseDirectory + File.separator + name);
         MiscUtils.executeShellCommand("ng add ngx-bootstrap  --component typeahead" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install -S @angular/material @angular/cdk @angular/animations" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install -S @angular/material @angular/cdk @angular/animations" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm uninstall @angular/core" , baseDirectory + File.separator + name);
+        MiscUtils.executeShellCommand("npm install -S @angular/core" , baseDirectory + File.separator + name);
         System.out.println("*** NOTE: Manually add below to angular.json if not present \n\"styles\": [\n" +
                 "  \"src/styles.css\",\n" +
                 "  \"node_modules/bootstrap/dist/css/bootstrap.min.css\"\n" +

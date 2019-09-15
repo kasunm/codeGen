@@ -20,7 +20,7 @@ public class SearchTemplates {
             "${argsValidate}\n" +
             "        List<${className}> ${classVariableName}s =  ${classVariableName}Service.${methodName}(${attributeNames});\n" +
             "        if(${classVariableName}s == null || ${classVariableName}s.size() < 1) throw new ResourceNotFoundException(\"Unable to find any ${classVariableName}s matching criteria\");\n" +
-            "        return new ResponseEntity(${classVariableName}s, HttpStatus.ACCEPTED);\n" +
+            "        return new ResponseEntity(getDTOs(${classVariableName}s), HttpStatus.ACCEPTED);\n" +
             "    }";
 
     public static String service = "\t/**\n" +
@@ -42,6 +42,37 @@ public class SearchTemplates {
             "    public List<${className}> ${methodName}(${args});\n";
 
     public static String repo = "List<${className}> ${methodName}(${args});";
+
+    public static String angularService = "\tpublic ${methodName}(${argsAngular}): Observable<${className}[]> {\n" +
+            "    return this.http.get<${className}[]>(this.url + ${searchUrlReplaced} );\n" +
+            "  }";
+
+    public static String angualrListTS = "on${methodName}(${argsAngular}) {\n" +
+            "    if (${argsValid}) {\n" +
+            "        this._${classVariableName}Service.${methodName}(${argNamesAngular})\n" +
+            "          .subscribe( data => this._${classVariableName}s = data, error1 => this.errorMessage = error1);\n" +
+            "    } else {\n" +
+            "     this.onSearchAll();\n" +
+            "    }\n" +
+            "  }";
+
+    public static String angualrHTML = " <div class=\"form-inline md-form mr-auto mb-4\">\n" +
+            "    <form name=\"search\">\n" +
+            " ${angualrHTMLSearchItem}" +
+            "    </form>\n" +
+            "\n" +
+            "  </div>";
+
+    public static String angualrHTMLSearchItem =
+            " <input class=\"form-control mr-sm-2\" #${methodName} type=\"text\" placeholder=\"${methodNameHuman}\" id=\"${methodName}\" name=\"${methodName}\" aria-label=\"${methodName}\">\n" +
+            "    <button type=\"button\" class=\"btn btn-primary\" (click)=\"on${methodName}(${methodName}.value)\">\n" +
+            "      <mat-icon>search</mat-icon>\n" +
+            "    </button>&nbsp;\n" +
+            "    <button type=\"reset\" class=\"btn btn-primary\" (click)=\"clear()\">\n" +
+            "      <mat-icon>clear</mat-icon>\n" +
+            "    </button>&nbsp;&nbsp;\n";
+
+    //Test methods
 
     public static String controllerTest = "    @Test\n" +
             "    public void ${methodName}Test() throws Exception{\n" +
@@ -116,4 +147,6 @@ public class SearchTemplates {
             "            Assert.assertTrue(\"Expects InvalidDataAccessApiUsageException\", e != null);\n" +
             "        }\n" +
             "    }";
+
+
 }

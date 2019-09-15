@@ -159,6 +159,13 @@ public class Settings {
         return " ";
     }
 
+    public  ClassTemplate getClass(String className){
+        for(ClassTemplate classTemplate: classes){
+            if(classTemplate.className.equals(className)) return classTemplate;
+        }
+        return null;
+    }
+
     public  List<AttributeTemplate> getClassAttributes(String className){
         for(ClassTemplate classTemplate: classes){
             if(classTemplate.className.equals(className)) return classTemplate.attributes;

@@ -1,5 +1,5 @@
 {
-  "javaProjectName":"Ams",
+  "javaProjectName":"Ams2",
   "javaPackage":"lk.empire.ams",
   "javaProjectBasePath":"F:/Develpment/Ams",
   "projectDescription":"Apartment management system for empire apartments",
@@ -72,7 +72,7 @@
       ],
       "searchOptions":[
         {
-          "methodName": "findAllByName",
+          "methodName": "findAllByNameLike",
           "attributeNames": "name",
           "searchUrl": "Name",
           "searchQuery": " "
@@ -132,6 +132,16 @@
           "includeInDTO":false
         },
         {
+          "attributeName":"payments",
+          "classTypeName":"Payment",
+          "type":"CLASS",
+          "collectionType":"Set",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
           "attributeName":"notificationList",
           "classTypeName":"Notification",
           "type":"CLASS",
@@ -150,6 +160,26 @@
           "required":false,
           "showOnGrid":false,
           "includeInDTO":false
+        }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByFirstNameLike",
+          "attributeNames": "firstName",
+          "searchUrl": "firstName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmail",
+          "attributeNames": "email",
+          "searchUrl": "email",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByNic",
+          "attributeNames": "nic",
+          "searchUrl": "nic",
+          "searchQuery": " "
         }
       ]
     },
@@ -258,6 +288,32 @@
           "includeInDTO":true
         }
 
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByUserRole",
+          "attributeNames": "userRole",
+          "searchUrl": "userRole",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByFirstNameLike",
+          "attributeNames": "firstName",
+          "searchUrl": "firstName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmail",
+          "attributeNames": "email",
+          "searchUrl": "email",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByContact1",
+          "attributeNames": "contact1",
+          "searchUrl": "contact1",
+          "searchQuery": " "
+        }
       ]
     },
 
@@ -291,7 +347,34 @@
           "showOnGrid":false,
           "includeInDTO":false
         }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByCompanyNameLike",
+          "attributeNames": "companyName",
+          "searchUrl": "companyName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByFirstNameLike",
+          "attributeNames": "firstName",
+          "searchUrl": "firstName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmail",
+          "attributeNames": "email",
+          "searchUrl": "email",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByNic",
+          "attributeNames": "nic",
+          "searchUrl": "nic",
+          "searchQuery": " "
+        }
       ]
+
     },
 
     {
@@ -315,6 +398,28 @@
           "includeInDTO":false
         }
       ]
+    ,
+      "searchOptions":[
+        {
+          "methodName": "findAllByFirstNameLike",
+          "attributeNames": "firstName",
+          "searchUrl": "firstName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmail",
+          "attributeNames": "email",
+          "searchUrl": "email",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByNic",
+          "attributeNames": "nic",
+          "searchUrl": "nic",
+          "searchQuery": " "
+        }
+      ]
+
     },
 
     {
@@ -373,6 +478,26 @@
           "showOnGrid":true,
           "relationShipDTOAttributes":"id,name,number",
           "includeInDTO":true
+        }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByType",
+          "attributeNames": "type",
+          "searchUrl": "type",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByAvailability",
+          "attributeNames": "availability",
+          "searchUrl": "availability",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByFloor_NameLike",
+          "attributeNames": "floor",
+          "searchUrl": "floor",
+          "searchQuery": " "
         }
       ]
     },
@@ -500,6 +625,45 @@
           "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameLike",
+          "attributeNames": "name",
+          "searchUrl": "name",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByDate",
+          "attributeNames": "date",
+          "searchUrl": "date",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEventType",
+          "attributeNames": "eventType",
+          "searchUrl": "eventType",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByApartment_Id",
+          "attributeNames": "apartment",
+          "searchUrl": "apartment",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByUser_Id",
+          "attributeNames": "user",
+          "searchUrl": "user",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmployee_Id",
+          "attributeNames": "employee",
+          "searchUrl": "employee",
+          "searchQuery": " "
+        }
+
       ]
     },
     {
@@ -537,7 +701,15 @@
           "showOnGrid":false,
           "includeInDTO":true
         }
-      ]
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameLike",
+          "attributeNames": "name",
+          "searchUrl": "name",
+          "searchQuery": " "
+        }
+        ]
     },
     {
       "className":"Floor",
@@ -585,6 +757,26 @@
           "showOnGrid":false,
           "relationShipDTOAttributes":"id,name",
           "includeInDTO":true
+        }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameLike",
+          "attributeNames": "name",
+          "searchUrl": "name",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByFloorNumber",
+          "attributeNames": "floorNumber",
+          "searchUrl": "floorNumber",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByApartment_Id",
+          "attributeNames": "apartment",
+          "searchUrl": "apartment",
+          "searchQuery": " "
         }
       ]
     },
@@ -685,6 +877,38 @@
           "relationShipDTOAttributes":"id,firstName",
           "includeInDTO":true
         }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByDescriptionLike",
+          "attributeNames": "description",
+          "searchUrl": "description",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByType",
+          "attributeNames": "type",
+          "searchUrl": "type",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByAction",
+          "attributeNames": "action",
+          "searchUrl": "action",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByClient_Id",
+          "attributeNames": "client",
+          "searchUrl": "client",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByEmployee_Id",
+          "attributeNames": "employee",
+          "searchUrl": "employee",
+          "searchQuery": " "
+        }
       ]
     },
 
@@ -783,6 +1007,44 @@
           "relationShipDTOAttributes": "id,firstName",
           "includeInDTO": true
         }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByDescriptionLike",
+          "attributeNames": "description",
+          "searchUrl": "description",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByBlockNameLike",
+          "attributeNames": "blockName",
+          "searchUrl": "blockName",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByDoneBy",
+          "attributeNames": "doneBy",
+          "searchUrl": "doneBy",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByMaintenanceType",
+          "attributeNames": "maintenanceType",
+          "searchUrl": "maintenanceType",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByStatus",
+          "attributeNames": "status",
+          "searchUrl": "status",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByContractor_Id",
+          "attributeNames": "contractor",
+          "searchUrl": "contractor",
+          "searchQuery": " "
+        }
       ]
     },
     {
@@ -830,7 +1092,15 @@
           "showOnGrid":true,
           "includeInDTO":true
         }
-      ]
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByDescriptionLike",
+          "attributeNames": "description",
+          "searchUrl": "description",
+          "searchQuery": " "
+        }
+        ]
     },
     {
       "className":"Payment",
@@ -920,6 +1190,49 @@
           "showOnGrid":false,
           "relationShipDTOAttributes":"id,name",
           "includeInDTO":true
+        },
+        {
+          "attributeName":"client",
+          "classTypeName":"Client",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,firstName,lastName",
+          "includeInDTO":true
+        }
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findPaymentsByClient_Id",
+          "attributeNames": "client",
+          "searchUrl": "client",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByStatus",
+          "attributeNames": "status",
+          "searchUrl": "status",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByDueDate",
+          "attributeNames": "dueDate",
+          "searchUrl": "dueDate",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByUnit_Id",
+          "attributeNames": "unit",
+          "searchUrl": "unit",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByStatusAndClient_Id",
+          "attributeNames": "status,client",
+          "searchUrl": "StatusAndClient",
+          "searchQuery": " "
         }
       ]
     },
@@ -966,6 +1279,26 @@
           "includeInDTO":true
         },
         {
+          "attributeName":"parkingSlots",
+          "classTypeName":"ParkingSlot",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"vehicles",
+          "classTypeName":"Vehicle",
+          "type":"CLASS",
+          "collectionType":"List",
+          "relationShip":"OneToMany",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
           "attributeName":"floor",
           "classTypeName":"Floor",
           "type":"CLASS",
@@ -984,6 +1317,336 @@
           "required":true,
           "showOnGrid":true,
           "includeInDTO":true
+        }
+
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameLike",
+          "attributeNames": "name",
+          "searchUrl": "name",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByOwner_Id",
+          "attributeNames": "owner",
+          "searchUrl": "owner",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByRenter_Id",
+          "attributeNames": "renter",
+          "searchUrl": "renter",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByAvailability",
+          "attributeNames": "availability",
+          "searchUrl": "availability",
+          "searchQuery": " "
+        }
+      ]
+    },
+    {
+      "className":"ParkingSlot",
+      "classDescription":"A parking slot",
+      "classURL":"parkingslots",
+      "idAttributeName":"id",
+      "classNameDisplay":"Parking slot",
+      "classFileAngular":"parking-slot",
+      "classVariableName":"parkingSlot",
+      "attributes":[
+        {
+          "attributeName":"name",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 3,
+          "max": 20,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"unit",
+          "classTypeName":"Unit",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"vehicleParking",
+          "classTypeName":"VehicleParking",
+          "type":"CLASS",
+          "relationShip":"OneToMany",
+          "collectionType":"Set",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"vehicleNumber",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 10,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+
+        {
+          "attributeName":"availability",
+          "classTypeName":"Availability",
+          "type":"ENUM",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNameLike",
+          "attributeNames": "name",
+          "searchUrl": "name",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByUnit_Id",
+          "attributeNames": "unit",
+          "searchUrl": "unit",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByVehicleNumber",
+          "attributeNames": "vehicleNumber",
+          "searchUrl": "vehicleNumber",
+          "searchQuery": " "
+        }
+      ]
+    },
+
+    {
+      "className":"Vehicle",
+      "classDescription":"A vehicle",
+      "classURL":"vehicles",
+      "idAttributeName":"id",
+      "classNameDisplay":"Vehicle",
+      "classFileAngular":"vehicle",
+      "classVariableName":"vehicle",
+      "attributes":[
+        {
+          "attributeName":"number",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 3,
+          "max": 20,
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"unit",
+          "classTypeName":"Unit",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"vehicleParking",
+          "classTypeName":"VehicleParking",
+          "type":"CLASS",
+          "relationShip":"OneToMany",
+          "collectionType":"Set",
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":false
+        },
+        {
+          "attributeName":"make",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 30,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"model",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 50,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+
+      ],
+      "searchOptions":[
+        {
+          "methodName": "findAllByNumber",
+          "attributeNames": "number",
+          "searchUrl": "number",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByUnit_Id",
+          "attributeNames": "unit",
+          "searchUrl": "unit",
+          "searchQuery": " "
+        }
+      ]
+    },
+    {
+      "className":"VehicleParking",
+      "classDescription":"A parking duration of vehicle",
+      "classURL":"vehicle-parking",
+      "idAttributeName":"id",
+      "classNameDisplay":"Vehicle Parking",
+      "classFileAngular":"vehicle-parking",
+      "classVariableName":"vehicleParking",
+      "attributes":[
+        {
+          "attributeName":"driverName",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 5,
+          "max": 100,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"driverID",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 25,
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"inDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"inTime",
+          "type":"TIME",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"outDate",
+          "type":"DATE",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":true,
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"outTime",
+          "type":"TIME",
+          "collectionType":"None",
+          "required":true,
+          "showOnGrid":true,
+          "includeInDTO":true
+        }
+
+      ,
+        {
+          "attributeName":"vehicle",
+          "classTypeName":"Vehicle",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,number",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"parkingSlot",
+          "classTypeName":"ParkingSlot",
+          "type":"CLASS",
+          "relationShip":"ManyToOne",
+          "collectionType":"None",
+          "required":false,
+          "showOnGrid":false,
+          "relationShipDTOAttributes":"id,name",
+          "includeInDTO":true
+        },
+        {
+          "attributeName":"remarks",
+          "type":"STRING",
+          "collectionType":"None",
+          "min": 0,
+          "max": 500,
+          "required":false,
+          "showOnGrid":false,
+          "includeInDTO":true
+        }
+
+
+      ],
+      "searchOptions":[
+
+        {
+          "methodName": "findAllByParkingSlot_Id",
+          "attributeNames": "parkingSlot",
+          "searchUrl": "parkingSlot",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByDriverID",
+          "attributeNames": "driverID",
+          "searchUrl": "driverID",
+          "searchQuery": " "
+        },
+        {
+          "methodName": "findAllByInDate",
+          "attributeNames": "inDate",
+          "searchUrl": "inDate",
+          "searchQuery": " "
+        }
+      ,
+        {
+          "methodName": "findAllByOutDate",
+          "attributeNames": "outDate",
+          "searchUrl": "outDate",
+          "searchQuery": " "
+        }
+
+      ,
+        {
+          "methodName": "findAllByVehicle_Id",
+          "attributeNames": "vehicle",
+          "searchUrl": "vehicle-id",
+          "searchQuery": " "
+        }
+      ,
+        {
+          "methodName": "findAllByVehicle_number",
+          "attributeNames": "vehicle",
+          "searchUrl": "vehicle-number",
+          "searchQuery": " "
         }
 
       ]
@@ -1037,6 +1700,7 @@
       "enumName":"MaintenanceStatus",
       "enumValues":"Pending,Ongoing,Completed"
     }
+
 
 
 

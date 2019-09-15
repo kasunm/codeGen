@@ -23,6 +23,7 @@ import { SortableModule } from 'ngx-bootstrap/sortable';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { MatIconModule } from '@angular/material';
 
 
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -56,6 +57,7 @@ ${model.class.import}
     TimepickerModule.forRoot(),
     TooltipModule.forRoot(),
     AppRoutingModule,
+    MatIconModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule
